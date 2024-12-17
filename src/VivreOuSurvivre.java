@@ -16,13 +16,13 @@ class VivreOuSurvivre extends Program{
     // Algorithme principale
     void algorithm(){
         Joueur ludophile = newJoueur();
-        println(creationPersonnage(ludophile));
-        String[][] carte = new String[20][20];
+        explication(ludophile);
+        /*String[][] carte = new String[20][20];
         initialisationCarte(carte, ludophile);
         afficherCarte(carte, ludophile);
         for(int i=0; i<10; i++){
             deplacementPersonnage(ludophile, carte);
-        }
+        }*/
         
     }
 
@@ -114,7 +114,7 @@ class VivreOuSurvivre extends Program{
 
     //Maitre du jeu : Kaomiji
     String maitreKaomiji(int nbChances){
-        String[] kaomiji = new String[]{"( ᵔ ᗜ ᵔ )", "(˶˃ ᵕ ˂˶)", "O_o", "(⌐■-■)", "(ಠ_ಠ)>⌐■-■", "ಠ_ʖಠ", "ರ_ರ", "(ꐦ¬_¬)", "(⪖ ⩋⪕)", "୧(๑•̀ᗝ•́)૭", "(⌐■_■)︻デ═一"};
+        String[] kaomiji = new String[]{"(˶•ᴗ•˶)", "(˶˃ ᵕ ˂˶)", "O_o", "(⌐■-■)", "(ಠ_ಠ)>⌐■-■", "ಠ_ʖಠ", "ರ_ರ", "(ꐦ¬_¬)", "(⪖ ⩋⪕)", "୧(๑•̀ᗝ•́)૭", "(⌐■_■)︻デ═一"};
         int idx = min(length(kaomiji)-1, length(kaomiji) - (nbChances+1));
 
         if(nbChances<nbViePrecedent){
@@ -126,18 +126,35 @@ class VivreOuSurvivre extends Program{
     }
 
     void testMaitreKaomiji(){
-        int nbChances;
+        int nbLife;
 
-        nbChances = 10;
-        assertEquals("( ᵔ ᗜ ᵔ )", maitreKaomiji(nbChances));
+        nbLife = 10;
+        assertEquals("(˶•ᴗ•˶)", maitreKaomiji(nbLife));
 
-        nbChances = 9;
-        assertEquals("(˶˃ ᵕ ˂˶)", maitreKaomiji(nbChances));
+        nbLife = 9;
+        assertEquals("(˶˃ ᵕ ˂˶)", maitreKaomiji(nbLife));
 
-        nbChances = 8;
-        assertEquals("O_o", maitreKaomiji(nbChances));
+        nbLife = 8;
+        assertEquals("O_o", maitreKaomiji(nbLife));
     }
-    
+
+    //Facilitera les moments où Kaomiji parle (au lieu d'utiliser println())
+    String kaomijiPhrase(String mot){
+        return maitreKaomiji(nbVie) + " - " + mot;
+    }
+
+    void testKaomijiOrateur(){
+        assertEquals("(˶•ᴗ•˶) - Salut", kaomijiPhrase("Salut"));
+    }
+
+    //Affichera les paroles de Kaomiji
+    void kaomijiOrateur(String mot){
+        print(kaomijiPhrase(mot));
+    }
+
+    void kaomijiOrateurln(String mot){
+        println(kaomijiPhrase(mot));
+    }
 
     //Création de type : Joueur
     Joueur newJoueur(){
@@ -145,75 +162,6 @@ class VivreOuSurvivre extends Program{
         ludophile.nbVie = nbVie;
         ludophile.nbReussite = nbReussite;
         return ludophile;
-    }
-
-    //Nom du Joueur
-    String nomJoueur(Joueur ludophile){
-        print(maitreKaomiji(nbVie) + " - Quel est votre nom : ");
-        ludophile.nom = readString();
-        return ludophile.nom;
-    }
-
-    //Genre du Joueur
-    String genreJoueur(Joueur ludophile){
-        print(maitreKaomiji(nbVie) + " - Quel est votre genre [Masculin ; Feminin] : ");
-        ludophile.genre = readString();
-        while(!equals(ludophile.genre, "Masculin") && !equals(ludophile.genre, "Feminin")){
-            print(maitreKaomiji(nbVie) + " - Non, vous devez choisir entre Masculin et Feminin : ");
-            ludophile.genre = readString();
-        }
-        return ludophile.genre;
-    }
-
-    //Personnage du Joueur
-    String personnageJoueur(Joueur ludophile){
-        String[] personnageMasculin = new String[]{"👨","👦","👶"};
-        String[] personnageFeminin = new String[]{"👩","👧","👶"};
-
-        if(equals(ludophile.genre, "Masculin")){
-            afficherPersonnage(personnageMasculin);
-            ludophile.personnage = personnageMasculin[selectionPersonnage(personnageMasculin)];
-        } else {
-            afficherPersonnage(personnageFeminin);
-            ludophile.personnage = personnageFeminin[selectionPersonnage(personnageFeminin)];
-        }
-
-        return ludophile.personnage;
-    }
-
-    //Affichage des personnages
-    void afficherPersonnage(String[] personnage){
-        println(maitreKaomiji(nbVie) + " - Voici les personnages qui sont à votre disposition : ");
-        for(int idx=0; idx<length(personnage); idx++){
-            delay(500);
-            println((idx+1) + " : " + personnage[idx]);
-        }
-    }
-
-    //Selection de personnage
-    int selectionPersonnage(String[] personnage){
-        print(maitreKaomiji(nbVie) + " - Choisis un personnage en tapant le numéro qui lui correspond : ");
-        int choix = readInt();
-        while(choix>length(personnage) || choix<1){
-            print(maitreKaomiji(nbVie) + " - Ton choix n'est pas bon, essaie encore : ");
-            choix = readInt();
-        }
-
-        return choix-1;
-    }
-
-    //Création de personnage
-    String creationPersonnage(Joueur ludophile){
-        String nom = nomJoueur(ludophile);
-        delay(1000);
-        String genre = genreJoueur(ludophile);
-        delay(1000);
-        String personnage = personnageJoueur(ludophile);
-        delay(1000);
-        return maitreKaomiji(nbVie) + " - Voici les informations que vous nous avez fournies : \n" +
-                                      "Votre nom est : " + nom + "\n" +
-                                      "Votre genre est : " + genre + "\n" +
-                                      "Vous avez choisi le personnages : " + personnage;
     }
 
     //Recherchera le personnage dans la map
@@ -253,68 +201,168 @@ class VivreOuSurvivre extends Program{
         return idxC;
     }
 
-    //Positionnement du Joueur
-    String positionJoueur(Joueur ludophile, String[][] map){
-        ludophile.position = "[" + (coordonnéeLigne(ludophile, map)+1) + ";" + (coordonnéeColonne(ludophile, map)+1) + "]";
-        return ludophile.position;
+    //Vérification du déplacement vers le Nord
+    boolean deplacementPossibleNord(Joueur ludophile, String[][] map){
+        if(coordonnéeLigne(ludophile, map) == 0){
+            return false;
+        }
+
+        if(equals(map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)], MONTAGNE)){
+            return false;
+        }
+
+        return true;
     }
 
-    //Affichage des informations (Nom, PV, Coordonnées, Reussite)
-    void informationJoueur(Joueur ludophile, String[][] map){
-        println(ludophile.nom + " - PV: " + nbVie + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Nombre de Reussite: " + nbReussite);
+    //Vérification du déplacement vers le Sud
+    boolean deplacementPossibleSud(Joueur ludophile, String[][] map){
+        if(coordonnéeLigne(ludophile, map) == (length(map, 1)-1)){
+            return false;
+        }
+
+        if(equals(map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)], MONTAGNE)){
+            return false;
+        }
+
+        return true;
     }
 
-    //Vérification du déplacement
-    
+    //Vérification du déplacement vers l'Ouest
+    boolean deplacementPossibleOuest(Joueur ludophile, String[][] map){
+        if(coordonnéeColonne(ludophile, map) == 0){
+            return false;
+        }
+
+        if(equals(map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1], MONTAGNE)){
+            return false;
+        }
+
+        return true;
+    }
+
+    //Vérification du déplacement vers l'Est
+    boolean deplacementPossibleEst(Joueur ludophile, String[][] map){
+        if(coordonnéeColonne(ludophile, map) == (length(map, 2)-1)){
+            return false;
+        }
+
+        if(equals(map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1], MONTAGNE)){
+            return false;
+        }
+
+        return true;
+    }
 
     //Avancer vers le Nord
     void avancerNord(Joueur ludophile, String[][] map){
-        map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
-        map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = CHEMIN;
-        afficherCarte(map, ludophile);
-        println();
+        if(!deplacementPossibleNord(ludophile, map)){
+            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+        } else {
+            map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
+            map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = CHEMIN;
+            afficherCarte(map, ludophile);
+            println();
+        } 
     }
 
     //Avancer vers le Sud
     void avancerSud(Joueur ludophile, String[][] map){
-        map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
-        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
-        afficherCarte(map, ludophile);
-        println();
+        if(!deplacementPossibleSud(ludophile, map)){
+            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+        } else {
+            map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
+            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
+            afficherCarte(map, ludophile);
+            println();
+        }
+        
     }
 
     //Avancer vers l'Est
     void avancerEst(Joueur ludophile, String[][] map){
-        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = ludophile.personnage;
-        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
-        afficherCarte(map, ludophile);
-        println();
+        if(!deplacementPossibleEst(ludophile, map)){
+            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+        } else {
+            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = ludophile.personnage;
+            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
+            afficherCarte(map, ludophile);
+            println();
+        }
     }
 
     //Avancer vers l'Ouest
     void avancerOuest(Joueur ludophile, String[][] map){
-        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1] = ludophile.personnage;
-        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = CHEMIN;
-        afficherCarte(map, ludophile);
-        println();
+        if(!deplacementPossibleOuest(ludophile, map)){
+            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+        } else {
+            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1] = ludophile.personnage;
+            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = CHEMIN;
+            afficherCarte(map, ludophile);
+            println();
+        }
     }
 
-    //Avancer vers n direction n fois
-
-
-    //Déplacement du personnage
-    void deplacementPersonnage(Joueur ludophile, String[][] map){
-        print(maitreKaomiji(nbVie) + " - Voici les déplacements possibles : " + "\n" + 
-                                     "1 : Avancer vers le Nord" + "\n" +
-                                     "2 : Avancer vers le Sud" + "\n" +
-                                     "3 : Avancer vers l'Est" + "\n" +
-                                     "4 : Avancer vers l'Ouest" + "\n" +
+    //Avancer vers n direction n fois (boucle)
+    void avancerBoucle(Joueur ludophile, String[][] map){
+        print(maitreKaomiji(nbVie) + " - Voici les déplacements en boucle possibles :\n" + 
+                                     "1 : Avancer vers le Nord\n" +
+                                     "2 : Avancer vers le Sud\n" +
+                                     "3 : Avancer vers l'Est\n" +
+                                     "4 : Avancer vers l'Ouest\n" +
                                      "Que choisissez-vous ? "
         );
 
         int choix = readInt();
 
         while(choix>4 || choix<1){
+            print(maitreKaomiji(nbVie) + " - Vous devez choisir un chiffre qui correspond à un déplacement parmi ceux mentionnés ci-dessus : ");
+            choix = readInt();
+        }
+
+        print(maitreKaomiji(nbVie) + " - Combien de cases voulez-vous avancer ? Entrez un chiffre : ");
+        int nbCases = readInt();
+
+        if(choix == 1){
+            for(int cpt=0; cpt<nbCases; cpt++){
+                avancerNord(ludophile, map);
+                println();
+                delay(500);
+            }
+        } else if(choix == 2){
+            for(int cpt=0; cpt<nbCases; cpt++){
+                avancerSud(ludophile, map);
+                println();
+                delay(500);
+            }
+        } else if(choix == 3){
+            for(int cpt=0; cpt<nbCases; cpt++){
+                avancerEst(ludophile, map);
+                println();
+                delay(500);
+            }
+        } else if(choix == 4){
+            for(int cpt=0; cpt<nbCases; cpt++){
+                avancerOuest(ludophile, map);
+                println();
+                delay(500);
+            }
+        }
+    }
+
+    //Déplacement du personnage
+    void deplacementPersonnage(Joueur ludophile, String[][] map){
+        print(maitreKaomiji(nbVie) + " - Voici les déplacements possibles :\n" + 
+                                     "1 : Avancer vers le Nord\n" +
+                                     "2 : Avancer vers le Sud\n" +
+                                     "3 : Avancer vers l'Est\n" +
+                                     "4 : Avancer vers l'Ouest\n" +
+                                     "5 : Avancer en Boucle\n" +
+                                     "Que choisissez-vous ? "
+        );
+
+        int choix = readInt();
+
+        while(choix>5 || choix<1){
             print(maitreKaomiji(nbVie) + " - Vous devez choisir un chiffre qui correspond à un déplacement parmi ceux mentionnés ci-dessus : ");
             choix = readInt();
         }
@@ -327,6 +375,115 @@ class VivreOuSurvivre extends Program{
             avancerEst(ludophile, map);
         } else if(choix == 4){
             avancerOuest(ludophile, map);
+        } else if(choix == 5){
+            avancerBoucle(ludophile, map);
         }
+    }
+
+    //Explication de VivreOuSurvivre lors du démarrage du jeu
+    void explication(Joueur ludophile){
+        kaomijiOrateurln("Bienvenue dans VivreOuSurvivre ! Dans ce jeu, tu vas apprendre les bases des algorithmes en t'amusant.");
+        delay(1000);
+        kaomijiOrateur("Je me présente, je suis le maître du jeu : Kaomiji, ton super compagnon ! Et toi, qui es-tu ? ");
+        ludophile.nom = readString();
+        delay(1000);
+        kaomijiOrateurln(ludophile.nom + "? Super ton nom ! Avant de commencer à t'apprendre les bases des algorithmes, il faut d'abord créer ton personnage.");
+        delay(1000);
+        genreJoueur(ludophile);
+        delay(1000);
+        kaomijiOrateurln("Tu es donc du genre " + ludophile.genre + " !");
+        delay(1000);
+        personnageJoueur(ludophile);
+        delay(1000);
+        recaputilatif(ludophile);
+        kaomijiOrateurln("Maintenant, laisse-moi t'expliquer tout ce qu'il y a à savoir sur le jeu...");
+    }
+
+    //Genre du Joueur
+    String genreJoueur(Joueur ludophile){
+        kaomijiOrateur("Quel est votre genre [Masculin (M); Feminin (F)] : ");
+        ludophile.genre = readString();
+        while((!equals(ludophile.genre, "Masculin") && !equals(ludophile.genre, "M")) && (!equals(ludophile.genre, "Feminin") && !equals(ludophile.genre, "F"))){
+            kaomijiOrateur("Non, vous devez choisir entre Masculin (ou M) et Feminin (ou F) : ");
+            ludophile.genre = readString();
+        }
+
+        if(equals(ludophile.genre, "M")){
+            ludophile.genre = "Masculin";
+        } else if(equals(ludophile.genre, "F")){
+            ludophile.genre = "Feminin";
+        }
+
+        return ludophile.genre;
+    }
+
+    //Personnage du Joueur
+    String personnageJoueur(Joueur ludophile){
+        String[] personnageMasculin = new String[]{"👨","👦","👶"};
+        String[] personnageFeminin = new String[]{"👩","👧","👶"};
+
+        if(equals(ludophile.genre, "Masculin")){
+            afficherPersonnage(personnageMasculin);
+            ludophile.personnage = personnageMasculin[selectionPersonnage(personnageMasculin)];
+        } else {
+            afficherPersonnage(personnageFeminin);
+            ludophile.personnage = personnageFeminin[selectionPersonnage(personnageFeminin)];
+        }
+
+        return ludophile.personnage;
+    }
+
+    //Affichage des personnages
+    void afficherPersonnage(String[] personnage){
+        kaomijiOrateurln("Voici les personnages qui sont à ta disposition : ");
+        for(int idx=0; idx<length(personnage); idx++){
+            delay(500);
+            println(espacement(maitreKaomiji(nbVie) + " - ") + (idx+1) + " : " + personnage[idx]);
+        }
+    }
+
+    //Selection de personnage
+    int selectionPersonnage(String[] personnage){
+        kaomijiOrateur("Choisis un personnage en tapant le numéro qui lui correspond : ");
+        int choix = readInt();
+        while(choix>length(personnage) || choix<1){
+            kaomijiOrateur("Ton choix n'est pas bon, essaie encore : ");
+            choix = readInt();
+        }
+
+        return choix-1;
+    }
+
+    //Espacement dans le texte
+    String espacement(String mot){
+        String espace = "";
+
+        for(int cpt=0; cpt<length(mot); cpt++){
+            espace = espace + " ";
+        }
+
+        return espace;
+    }
+
+    //Récaputilif de la création de personnage
+    void recaputilatif(Joueur ludophile){
+        kaomijiOrateurln("Voici un récapitulatif de ce que tu m'as donné : ");
+        delay(500);
+        print(espacement(maitreKaomiji(nbVie) + " - ") + "Ton nom est : " + ludophile.nom + "\n");
+        delay(500);
+        print(espacement(maitreKaomiji(nbVie) + " - ") + "Ton genre est : " + ludophile.genre + "\n");
+        delay(500);
+        print(espacement(maitreKaomiji(nbVie) + " - ") + "Ton personnage est : " + ludophile.personnage + "\n");
+    }
+
+    //Positionnement du Joueur
+    String positionJoueur(Joueur ludophile, String[][] map){
+        ludophile.position = "[" + (coordonnéeLigne(ludophile, map)+1) + ";" + (coordonnéeColonne(ludophile, map)+1) + "]";
+        return ludophile.position;
+    }
+
+    //Affichage des informations (Nom, PV, Coordonnées, Reussite)
+    void informationJoueur(Joueur ludophile, String[][] map){
+        println(ludophile.nom + " - PV: " + nbVie + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Nombre de Reussite: " + nbReussite);
     }
 }

@@ -264,75 +264,43 @@ class VivreOuSurvivre extends Program{
         println(ludophile.nom + " - PV: " + nbVie + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Nombre de Reussite: " + nbReussite);
     }
 
+    //Vérification du déplacement
+    
+
     //Avancer vers le Nord
     void avancerNord(Joueur ludophile, String[][] map){
-        print(maitreKaomiji(nbVie) + " - Avancer vers le Nord : combien de fois voulez-vous avancer ? ");
-        int nbCases = readInt();
-
-        while(nbCases >= coordonnéeLigne(ludophile, map)){
-            print(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte ! ");
-            if(coordonnéeLigne(ludophile, map) == 0){
-                print("Nous vous conseillons de changer de direction\n");
-                delay(1000);
-                deplacementPersonnage(ludophile, map);
-            }else{
-                print("Essayez encore : ");
-                nbCases = readInt();
-            }
-        }
-
-        for(int cpt=0; cpt<nbCases; cpt++){
-            map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = CHEMIN;
-            afficherCarte(map, ludophile);
-            println();
-            delay(1000);
-        }
+        map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
+        map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = CHEMIN;
+        afficherCarte(map, ludophile);
+        println();
     }
 
     //Avancer vers le Sud
     void avancerSud(Joueur ludophile, String[][] map){
-        print(maitreKaomiji(nbVie) + " - Avancer vers le Sud : combien de fois voulez-vous avancer ? ");
-        int nbCases = readInt();
-
-        
-
-        for(int cpt=0; cpt<nbCases; cpt++){
-            map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
-            afficherCarte(map, ludophile);
-            println();
-            delay(1000);
-        }
+        map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
+        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
+        afficherCarte(map, ludophile);
+        println();
     }
 
     //Avancer vers l'Est
     void avancerEst(Joueur ludophile, String[][] map){
-        print(maitreKaomiji(nbVie) + " - Avancer vers l'Est : combien de fois voulez-vous avancer ? ");
-        int nbCases = readInt();
-
-        for(int cpt=0; cpt<nbCases; cpt++){
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
-            afficherCarte(map, ludophile);
-            println();
-            delay(1000);
-        }
+        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = ludophile.personnage;
+        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
+        afficherCarte(map, ludophile);
+        println();
     }
 
     //Avancer vers l'Ouest
     void avancerOuest(Joueur ludophile, String[][] map){
-        print(maitreKaomiji(nbVie) + " - Avancer vers l'Ouest : combien de fois voulez-vous avancer ? ");
-        int nbCases = readInt();
-
-        for(int cpt=0; cpt<nbCases; cpt++){
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = CHEMIN;
-            afficherCarte(map, ludophile);
-            println();
-            delay(1000);
-        }
+        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1] = ludophile.personnage;
+        map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = CHEMIN;
+        afficherCarte(map, ludophile);
+        println();
     }
+
+    //Avancer vers n direction n fois
+
 
     //Déplacement du personnage
     void deplacementPersonnage(Joueur ludophile, String[][] map){

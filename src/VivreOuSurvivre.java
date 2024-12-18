@@ -16,13 +16,13 @@ class VivreOuSurvivre extends Program{
     // Algorithme principale
     void algorithm(){
         Joueur ludophile = newJoueur();
-        explication(ludophile);
-        /*String[][] carte = new String[20][20];
+        creationPersonnage(ludophile);
+        String[][] carte = new String[20][20];
         initialisationCarte(carte, ludophile);
         afficherCarte(carte, ludophile);
         for(int i=0; i<10; i++){
             deplacementPersonnage(ludophile, carte);
-        }*/
+        }
         
     }
 
@@ -49,8 +49,8 @@ class VivreOuSurvivre extends Program{
 
     //Placera aléatoirement l'objectif du joueur
     void objectifCarte(String[][] map){
-        int idxLigneAleatoire = (int)(random()*length(map, 1));
-        int idxColonneAleatoire = (int)(random()*length(map, 2));
+        int idxLigneAleatoire = (int)(random()*length(map, 1)/2);
+        int idxColonneAleatoire = (int)(random()*length(map, 2)/2);
 
         map[idxLigneAleatoire][idxColonneAleatoire] = OBJECTIF;
     }
@@ -63,18 +63,18 @@ class VivreOuSurvivre extends Program{
         if(equals(map[length(map, 1)-1][length(map, 2)-2], OBJECTIF)){
             map[idxLigneAleatoire][idxColonneAleatoire] = ludophile.personnage;
         } else {
-            map[length(map, 1)-1][length(map, 2)-2] = ludophile.personnage;
+            map[length(map, 1)-1][length(map, 2)-1] = ludophile.personnage;
         }
     }
     
     //Initialisera la carte
     void initialisationCarte(String[][] map, Joueur ludophile){
         String[] element = new String[]{ARBRE, MONTAGNE, BOMBE, LAVE, CARTE};
-        double probabilite = 0.6;
+        double probabilite = 0.3;
 
         remplissageCarte(map);
 
-        for(int cpt=0; cpt<150; cpt++){
+        for(int cpt=0; cpt<(length(map, 1)*length(map,2))/3; cpt++){
             elementMap(map, element, probabilite);
         }
 
@@ -381,7 +381,7 @@ class VivreOuSurvivre extends Program{
     }
 
     //Explication de VivreOuSurvivre lors du démarrage du jeu
-    void explication(Joueur ludophile){
+    void creationPersonnage(Joueur ludophile){
         kaomijiOrateurln("Bienvenue dans VivreOuSurvivre ! Dans ce jeu, tu vas apprendre les bases des algorithmes en t'amusant.");
         delay(1000);
         kaomijiOrateur("Je me présente, je suis le maître du jeu : Kaomiji, ton super compagnon ! Et toi, qui es-tu ? ");
@@ -396,7 +396,6 @@ class VivreOuSurvivre extends Program{
         personnageJoueur(ludophile);
         delay(1000);
         recaputilatif(ludophile);
-        kaomijiOrateurln("Maintenant, laisse-moi t'expliquer tout ce qu'il y a à savoir sur le jeu...");
     }
 
     //Genre du Joueur
@@ -419,11 +418,12 @@ class VivreOuSurvivre extends Program{
 
     //Personnage du Joueur
     String personnageJoueur(Joueur ludophile){
-        String[] personnageMasculin = new String[]{"👨","👦","👶"};
-        String[] personnageFeminin = new String[]{"👩","👧","👶"};
+        String[] personnageMasculin = new String[]{"👨","👦","👶","🌞"};
+        String[] personnageFeminin = new String[]{"👩","👧","👶","🌝"};
 
         if(equals(ludophile.genre, "Masculin")){
             afficherPersonnage(personnageMasculin);
+            delay(500);
             ludophile.personnage = personnageMasculin[selectionPersonnage(personnageMasculin)];
         } else {
             afficherPersonnage(personnageFeminin);
@@ -436,9 +436,10 @@ class VivreOuSurvivre extends Program{
     //Affichage des personnages
     void afficherPersonnage(String[] personnage){
         kaomijiOrateurln("Voici les personnages qui sont à ta disposition : ");
+        delay(500);
         for(int idx=0; idx<length(personnage); idx++){
-            delay(500);
             println(espacement(maitreKaomiji(nbVie) + " - ") + (idx+1) + " : " + personnage[idx]);
+            delay(500);
         }
     }
 
@@ -474,6 +475,7 @@ class VivreOuSurvivre extends Program{
         print(espacement(maitreKaomiji(nbVie) + " - ") + "Ton genre est : " + ludophile.genre + "\n");
         delay(500);
         print(espacement(maitreKaomiji(nbVie) + " - ") + "Ton personnage est : " + ludophile.personnage + "\n");
+        delay(500);
     }
 
     //Positionnement du Joueur

@@ -10,7 +10,7 @@ Contacts :  anthony.cardoso-moreira.etu@univ-lille.fr , el-khair.nourdine.etu@un
 Des captures d'écran illustrant le fonctionnement du logiciel sont proposées dans le répertoire shots.
 
 
-# Utilisation de <le nom de votre jeu>
+# Utilisation de VivreOuSurvivre
 
 Afin d'utiliser le projet, il suffit de taper les commandes suivantes dans un terminal :
 

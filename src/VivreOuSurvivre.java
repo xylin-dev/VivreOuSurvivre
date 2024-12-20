@@ -1,5 +1,10 @@
 class VivreOuSurvivre extends Program{
-    //Variable Globale
+    
+    /* ================= */
+    /* VARIABLE GLOBALE  */
+    /* ================= */
+
+    //Elément de la map
     final String CHEMIN = "⬛";
     final String ARBRE = "🌳";
     final String MONTAGNE = "🗻";
@@ -8,9 +13,22 @@ class VivreOuSurvivre extends Program{
     final String LAVE = "🔥";
     final String CARTE = "🎴";
 
+    //Couleurs du texte selon de leurs fonctions
+    final String VERT = "\u001B[32m"; //Réussite, objectif atteint.
+    final String ROUGE = "\u001B[31m"; //Échec, erreur.
+    final String BLEU = "\u001B[34m"; //Important, à ne pas négliger.
+    final String JAUNE = "\u001B[33m"; //Alerte, attention nécessaire.
+    String RESET = "\u001B[0m"; //Couleurs et Styles par défauts
+
+    //Style du texte selon leurs fonctions
+    final String GRAS = "\033[1m"; 
+    final String SOULIGNE = "\033[4m";
+
+    //Nb de Vie du Joueur ainsi que son Nb de Vie Precedent pour Kaomiji
     int nbVie = 10;
     int nbViePrecedent = 10;
 
+    //Nb de Reussite (>5 = Apparition du Troll)
     int nbReussite = 0;
 
     void algorithm(){
@@ -242,7 +260,7 @@ class VivreOuSurvivre extends Program{
     //Tant que la saisie n'est pas correct, le joueur devra saisir à nouveau
     int verificationString(String saisie){
         while(!estChiffre(saisie)){
-            kaomijiOrateur("Ton choix n'est pas bon, essaie encore : ");
+            kaomijiOrateur(ROUGE + "Ton choix n'est pas bon, essaie encore : " + RESET);
             saisie = readString();
         }
         
@@ -395,50 +413,85 @@ class VivreOuSurvivre extends Program{
         assertTrue(deplacementPossibleEst(ludophile, map));
     }
 
-    //Vérification déplacement globale
+    //Vérification du déplacement globale
     boolean deplacementPossibleGlobal(Joueur ludophile, String[][] map){
-        return deplacementPossibleNord(ludophile, map) && deplacementPossibleSud(ludophile, map) && deplacementPossibleOuest(ludophile, map) && deplacementPossibleEst(ludophile, map);
+        return (!deplacementPossibleSud(ludophile, map) || !deplacementPossibleNord(ludophile,map)) && (!deplacementPossibleOuest(ludophile, map) || !deplacementPossibleEst(ludophile, map));
     }
 
     void testDeplacementPossibleGlobal(){
+        String[][] map;
         Joueur ludophile = newJoueur();
         ludophile.personnage = "👨";
 
-        String[][] map = new String[][]{{ludophile.personnage,CHEMIN,CHEMIN},
-                                        {CHEMIN,CHEMIN,CHEMIN},
-                                        {CHEMIN,CHEMIN,CHEMIN}};
-        assertFalse(deplacementPossibleGlobal(ludophile, map));
-
-        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
-                             {CHEMIN,CHEMIN,CHEMIN},
-                             {CHEMIN,CHEMIN,ludophile.personnage}};
-        assertFalse(deplacementPossibleGlobal(ludophile, map));
-        
-        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
-                             {CHEMIN,CHEMIN,CHEMIN},
-                             {ludophile.personnage,CHEMIN,CHEMIN}};
-        assertFalse(deplacementPossibleGlobal(ludophile, map));
-
-        map = new String[][]{{CHEMIN,CHEMIN,ludophile.personnage},
+        //Vers le Nord
+        map = new String[][]{{CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
-        assertFalse(deplacementPossibleGlobal(ludophile, map));
+        assertFalse(deplacementPossibleNord(ludophile, map));
 
-        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
-                             {CHEMIN,CHEMIN,CHEMIN},
-                            {CHEMIN,ludophile.personnage,CHEMIN}};
-        assertFalse(deplacementPossibleGlobal(ludophile, map));
+        map = new String[][]{{CHEMIN,MONTAGNE,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementPossibleNord(ludophile, map));
         
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
-        assertTrue(deplacementPossibleGlobal(ludophile, map));
+        assertTrue(deplacementPossibleNord(ludophile, map));
+
+        //Vers le Sud
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN}};
+        assertFalse(deplacementPossibleSud(ludophile, map));
+
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,MONTAGNE,CHEMIN}};
+        assertFalse(deplacementPossibleSud(ludophile, map));
+        
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementPossibleSud(ludophile, map));
+
+        //Vers l'Ouest
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN},
+                             {ludophile.personnage,CHEMIN,CHEMIN}};
+        assertFalse(deplacementPossibleOuest(ludophile, map));
+
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {MONTAGNE,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementPossibleOuest(ludophile, map));
+        
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementPossibleOuest(ludophile, map));
+    
+        //Vers l'Est
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,CHEMIN,ludophile.personnage},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementPossibleEst(ludophile, map));
+
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,MONTAGNE},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementPossibleEst(ludophile, map));
+        
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementPossibleEst(ludophile, map));
     }
 
     //Avancer vers le Nord
     void avancerNord(Joueur ludophile, String[][] map){
         if(!deplacementPossibleNord(ludophile, map)){
-            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+            kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
             map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
             map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = CHEMIN;
@@ -450,7 +503,7 @@ class VivreOuSurvivre extends Program{
     //Avancer vers le Sud
     void avancerSud(Joueur ludophile, String[][] map){
         if(!deplacementPossibleSud(ludophile, map)){
-            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+            kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
             map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
             map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
@@ -463,7 +516,7 @@ class VivreOuSurvivre extends Program{
     //Avancer vers l'Est
     void avancerEst(Joueur ludophile, String[][] map){
         if(!deplacementPossibleEst(ludophile, map)){
-            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+            kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
             map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = ludophile.personnage;
             map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
@@ -475,7 +528,7 @@ class VivreOuSurvivre extends Program{
     //Avancer vers l'Ouest
     void avancerOuest(Joueur ludophile, String[][] map){
         if(!deplacementPossibleOuest(ludophile, map)){
-            println(maitreKaomiji(nbVie) + " - Ce déplacement n'est pas possible, vous risquez de sortir de la carte !");
+            kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
             map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1] = ludophile.personnage;
             map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = CHEMIN;
@@ -485,7 +538,43 @@ class VivreOuSurvivre extends Program{
     }
 
     //Choix de déplacement
-    
+    void choixDeplacement(int nbChoix, Joueur ludophile, String[][] map){
+        if(nbChoix == 8){
+            avancerNord(ludophile, map);
+        } else if(nbChoix == 6){
+            avancerEst(ludophile, map);
+        } else if(nbChoix == 4){
+            avancerOuest(ludophile, map);
+        } else if(nbChoix == 2){
+            avancerSud(ludophile, map);
+        } else {
+            kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
+        }
+    }
+
+    //Déplacement en boucle selon le choix du Joueur
+    void boucleCompteur(Joueur ludophile, String[][] map){
+        String saisie;
+        int choix;
+        int nbCases;
+
+        kaomijiOrateur("Choisis un chiffre parmi ceux proposés, qui correspond au déplacement que tu veux faire !\n" + 
+                        espacement(maitreKaomiji(nbVie) + " - ") + "(8):⬆️   ; (6):➡️   ; (4):⬅️   ; (2):⬇️\nChoix : ");
+        saisie = readString();
+        choix = verificationString(saisie);
+        delay(500);
+        kaomijiOrateur("Combien de fois veux-tu aller dans cette direction ? ");
+        saisie = readString();
+        nbCases = verificationString(saisie);
+
+        for(int cpt=0; cpt<nbCases; cpt++){
+            choixDeplacement(choix, ludophile, map);
+            delay(500);
+            if(deplacementPossibleGlobal(ludophile, map)){
+                cpt = nbCases;
+            }
+        }
+    }
 
 
 
@@ -576,7 +665,7 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateur("Quel est votre genre [Masculin (M); Feminin (F)] : ");
         ludophile.genre = readString();
         while((!equals(ludophile.genre, "Masculin") && !equals(ludophile.genre, "M")) && (!equals(ludophile.genre, "Feminin") && !equals(ludophile.genre, "F"))){
-            kaomijiOrateur("Non, vous devez choisir entre Masculin (ou M) et Feminin (ou F) : ");
+            kaomijiOrateur(ROUGE + "Non, vous devez choisir entre Masculin (ou M) et Feminin (ou F) : " + RESET);
             ludophile.genre = readString();
         }
 
@@ -621,7 +710,7 @@ class VivreOuSurvivre extends Program{
         String saisie = readString();
         int choix = verificationString(saisie);
         while((choix>length(personnage) || choix<1)){
-            kaomijiOrateur("Ton choix n'est pas bon, essaie encore : ");
+            kaomijiOrateur(ROUGE + "Ton choix n'est pas bon, essaie encore : " + RESET);
             saisie = readString();
             choix = verificationString(saisie);
         }
@@ -662,7 +751,7 @@ class VivreOuSurvivre extends Program{
 
     //Affichage des informations (Nom, PV, Coordonnées, Reussite)
     void informationJoueur(Joueur ludophile, String[][] map){
-        print(ludophile.nom + " - PV: " + nbVie + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Nombre de Reussite: " + nbReussite);
+        print(GRAS + ludophile.nom + " - PV: " + nbVie + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Nombre de Reussite: " + nbReussite + RESET);
     }
 
 
@@ -715,6 +804,11 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateurln("Bienvenue dans VivreOuSurvivre ! Dans ce jeu, tu vas apprendre les bases des algorithmes en t'amusant.");
         kaomijiOrateur("Je me présente, je suis le maître du jeu : Kaomiji, ton super compagnon ! Et toi, qui es-tu ? ");
         ludophile.nom = readString();
+
+        if(equals(ludophile.nom, "")){
+            ludophile.nom = "Unknown";
+        }
+
         delay(1000);
         kaomijiOrateurln(ludophile.nom + "? Super ton nom ! Avant de commencer à t'apprendre les bases des algorithmes, il faut d'abord créer ton personnage.");
         genreJoueur(ludophile);
@@ -733,17 +827,37 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateur("Souhaitez-vous passer un tutoriel? [Oui (O); Non (N)] : ");
         String choix = readString();
 
-        if(equals(choix, "Oui") || equals(choix, "O")){
+        if(equals(choix, "") || equals(choix, "O") || equals(choix, "Oui")){
+            println();
             delay(1000);
-            kaomijiOrateurln("Je te conseille d'utiliser le pavé numérique pour entrer les valeurs des déplacements qui lui correspondent.");
+            kaomijiOrateurln(BLEU + "Je te conseille d'utiliser le pavé numérique pour entrer les valeurs des déplacements qui lui correspondent.\n" + RESET +
+                              espacement(maitreKaomiji(nbVie) + " - ") + "PS: Dans ce tutoriel, tu ne gagnes pas de points pour ta réussite. ;^;");
+            println();
+            delay(1000);
             avancerTutoriel(ludophile, but, map);
+            println();
             delay(1000);
             droiteTutoriel(ludophile, but, map);
+            println();
             delay(1000);
             gaucheTutoriel(ludophile, but, map);
+            println();
             delay(1000);
             basTutoriel(ludophile, but, map);
+            println();
             delay(1000);
+            kaomijiOrateurln("Avant d'aller plus loin, sache qu'il y a deux types de boucles :\n");
+            println(espacement(maitreKaomiji(nbVie) + " - ") + BLEU + "La boucle \"pour\" : C'est comme quand tu fais une tâche plusieurs fois.\n" + RESET +
+                             espacement(maitreKaomiji(nbVie) + " - ") + "Par exemple, \"Fais ceci 5 fois\". Tu répètes une action un nombre précis de fois.\n");
+            delay(1000);
+            println(espacement(maitreKaomiji(nbVie) + " - ") + BLEU + "La boucle \"tant que\" : C'est quand tu fais quelque chose encore et encore, tant qu'une condition est vraie.\n" + RESET +
+                             espacement(maitreKaomiji(nbVie) + " - ") + "Par exemple, \"Continue de sauter tant que tu n'as pas touché le sol\". Tu répètes jusqu'à ce que ça change.\n");
+            delay(1000);
+            kaomijiOrateur("Si tu es prêt à commencer avec les boucles à compteur, aka la boucle \"pour\", appuie sur la touche (ENTER) de ton clavier ! ");
+            choix = readString();
+            println();
+            delay(1000);
+            boucleCompteurTutoriel(ludophile, but, map);
         }
     }
 
@@ -773,11 +887,11 @@ class VivreOuSurvivre extends Program{
             if(choix == 8){
                 avancerNord(ludophile, map);
             }else{
-                kaomijiOrateurln("Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !");
+                kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
             }
         }
 
-        kaomijiOrateurln("Félicitations ! Maintenant, on passe aux déplacements vers la droite.");
+        kaomijiOrateurln(VERT + "Félicitations ! Maintenant, on passe aux déplacements vers la droite." + RESET);
     }
 
     //Tutoriel pour déplacement droite
@@ -788,7 +902,7 @@ class VivreOuSurvivre extends Program{
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
         map[length(map,1)-1][length(map,2)/2] = ludophile.personnage;
 
-        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à atteindre le drapeau rouge !");
+        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8) et (6) du clavier pour te déplacer!");
         afficherMap(map, ludophile);
         println();
@@ -802,11 +916,11 @@ class VivreOuSurvivre extends Program{
             }else if(choix == 6){
                 avancerEst(ludophile, map);
             }else{
-                kaomijiOrateurln("Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !");
+                kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
             }
         }
 
-        kaomijiOrateurln("Félicitations ! Maintenant, on passe aux déplacements vers la gauche.");
+        kaomijiOrateurln(VERT + "Félicitations ! Maintenant, on passe aux déplacements vers la gauche." + RESET);
     }
 
     //Tutoriel déplacement vers la gauche
@@ -817,13 +931,13 @@ class VivreOuSurvivre extends Program{
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
         map[length(map,1)-1][length(map,2)/2] = ludophile.personnage;
 
-        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à atteindre le drapeau rouge !");
+        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8), (6) et (4) du clavier pour te déplacer!");
         afficherMap(map, ludophile);
         println();
 
         while(!objectifAtteint(ludophile, map, but)){
-            print("(8):⬆️   ; (6):➡️   ; (4)⬅️\nChoix : ");
+            print("(8):⬆️   ; (6):➡️   ; (4):⬅️\nChoix : ");
             String saisie = readString();
             int choix = verificationString(saisie);
             if(choix == 8){
@@ -833,11 +947,11 @@ class VivreOuSurvivre extends Program{
             }else if(choix == 4){
                 avancerOuest(ludophile, map);
             }else{
-                kaomijiOrateurln("Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !");
+                kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
             }
         }
 
-        kaomijiOrateurln("Félicitations ! Maintenant, on passe aux déplacements vers le bas.");
+        kaomijiOrateurln(VERT + "Félicitations ! Maintenant, on passe aux déplacements vers le bas." + RESET);
     }
 
     //Tutoriel déplacement vers le bas
@@ -848,13 +962,13 @@ class VivreOuSurvivre extends Program{
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
         map[0][0] = ludophile.personnage;
 
-        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à atteindre le drapeau rouge !");
+        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8), (6), (4) et (2) du clavier pour te déplacer!");
         afficherMap(map, ludophile);
         println();
 
         while(!objectifAtteint(ludophile, map, but)){
-            print("(8):⬆️   ; (6):➡️   ; (4)⬅️   ; (2)⬇️\nChoix : ");
+            print("(8):⬆️   ; (6):➡️   ; (4):⬅️   ; (2):⬇️\nChoix : ");
             String saisie = readString();
             int choix = verificationString(saisie);
             if(choix == 8){
@@ -866,10 +980,38 @@ class VivreOuSurvivre extends Program{
             }else if(choix == 2){
                 avancerSud(ludophile, map);
             }else{
-                kaomijiOrateurln("Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !");
+                kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
             }
         }
 
-        kaomijiOrateurln("Félicitations ! Maintenant, on passe aux boucles.");
+        kaomijiOrateurln(VERT + "Félicitations ! Maintenant, on passe aux boucles." + RESET);
+    }
+
+    //Tutoriel déplacement en boucle à compteur
+    void boucleCompteurTutoriel(Joueur ludophile, Objectif but, String[][] map){
+        remplissageMap(map);
+        but.idxObjectifLigne = length(map,1)-1;
+        but.idxObjectifColonne = length(map,2)-1;
+        map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
+        map[0][0] = ludophile.personnage;
+
+        kaomijiOrateurln("Maintenant, déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
+        kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (5) du clavier pour te déplacer!");
+        afficherMap(map, ludophile);
+        println();
+
+        while(!objectifAtteint(ludophile, map, but)){
+            print("(5):🔁\nChoix : ");
+            String saisie = readString();
+            int choix = verificationString(saisie);
+            if(choix == 5){
+                boucleCompteur(ludophile, map);
+            }else{
+                kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
+            }
+        }
+
+        kaomijiOrateurln(VERT + "Félicitations ! Est-ce que ce n'est pas plus facile d'utiliser des boucles pour se déplacer ?" + RESET);
+        kaomijiOrateurln("Maintenant, on passe aux boucles événementielles, aka la boucle \"tant que\" !");
     }
 }

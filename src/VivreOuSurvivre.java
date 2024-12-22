@@ -1,8 +1,8 @@
 class VivreOuSurvivre extends Program{
     
-    /* ================= */
-    /* VARIABLE GLOBALE  */
-    /* ================= */
+    /* ============================== */
+    /* VARIABLE ET CONSTANTE GLOBALES  */
+    /* ============================== */
 
     //Elément de la map
     final String CHEMIN = "⬛";
@@ -43,7 +43,7 @@ class VivreOuSurvivre extends Program{
         afficherMap(map, ludophile);
         println();
 
-        while(!objectifAtteint(ludophile, map, but)){
+        while(objectifAtteint(ludophile, map, but)){
             deplacement(ludophile, map);
         }
     }
@@ -190,7 +190,9 @@ class VivreOuSurvivre extends Program{
 
     //Placement du joueur dans la map
     void placementJoueur(String[][] map, Joueur ludophile){
-        map[length(map, 1)-1][length(map, 2)-1] = ludophile.personnage;
+        ludophile.idxL = length(map, 1)-1;
+        ludophile.idxC = length(map, 2)-1;
+        map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
     }
     
     //Initialisera la carte
@@ -291,11 +293,11 @@ class VivreOuSurvivre extends Program{
 
     //Vérification du déplacement vers le Nord
     boolean deplacementPossibleNord(Joueur ludophile, String[][] map){
-        if(coordonnéeLigne(ludophile, map) == 0){
+        if(ludophile.idxL == 0){
             return false;
         }
 
-        if(equals(map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)], MONTAGNE)){
+        if(equals(map[ludophile.idxL-1][ludophile.idxC], MONTAGNE)){
             return false;
         }
 
@@ -306,16 +308,22 @@ class VivreOuSurvivre extends Program{
         Joueur ludophile = newJoueur();
         ludophile.personnage = "👨";
 
+        ludophile.idxL = 0;
+        ludophile.idxC = 1;
         String[][] map = new String[][]{{CHEMIN,ludophile.personnage,CHEMIN},
                                         {CHEMIN,CHEMIN,CHEMIN},
                                         {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(deplacementPossibleNord(ludophile, map));
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,MONTAGNE,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(deplacementPossibleNord(ludophile, map));
         
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
@@ -324,11 +332,11 @@ class VivreOuSurvivre extends Program{
 
     //Vérification du déplacement vers le Sud
     boolean deplacementPossibleSud(Joueur ludophile, String[][] map){
-        if(coordonnéeLigne(ludophile, map) == (length(map, 1)-1)){
+        if(ludophile.idxL == (length(map, 1)-1)){
             return false;
         }
 
-        if(equals(map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)], MONTAGNE)){
+        if(equals(map[ludophile.idxL+1][ludophile.idxC], MONTAGNE)){
             return false;
         }
 
@@ -339,16 +347,22 @@ class VivreOuSurvivre extends Program{
         Joueur ludophile = newJoueur();
         ludophile.personnage = "👨";
 
+        ludophile.idxL = 2;
+        ludophile.idxC = 1;
         String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                                         {CHEMIN,CHEMIN,CHEMIN},
                                         {CHEMIN,ludophile.personnage,CHEMIN}};
         assertFalse(deplacementPossibleSud(ludophile, map));
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,MONTAGNE,CHEMIN}};
         assertFalse(deplacementPossibleSud(ludophile, map));
         
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
@@ -357,11 +371,11 @@ class VivreOuSurvivre extends Program{
 
     //Vérification du déplacement vers l'Ouest
     boolean deplacementPossibleOuest(Joueur ludophile, String[][] map){
-        if(coordonnéeColonne(ludophile, map) == 0){
+        if(ludophile.idxC == 0){
             return false;
         }
 
-        if(equals(map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1], MONTAGNE)){
+        if(equals(map[ludophile.idxL][ludophile.idxC-1], MONTAGNE)){
             return false;
         }
 
@@ -372,16 +386,22 @@ class VivreOuSurvivre extends Program{
         Joueur ludophile = newJoueur();
         ludophile.personnage = "👨";
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 0;
         String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
-                                        {CHEMIN,CHEMIN,CHEMIN},
-                                        {ludophile.personnage,CHEMIN,CHEMIN}};
+                                        {ludophile.personnage,CHEMIN,CHEMIN},
+                                        {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(deplacementPossibleOuest(ludophile, map));
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {MONTAGNE,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(deplacementPossibleOuest(ludophile, map));
         
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
@@ -390,11 +410,11 @@ class VivreOuSurvivre extends Program{
 
     //Vérification du déplacement vers l'Est
     boolean deplacementPossibleEst(Joueur ludophile, String[][] map){
-        if(coordonnéeColonne(ludophile, map) == (length(map, 2)-1)){
+        if(ludophile.idxC == (length(map, 2)-1)){
             return false;
         }
 
-        if(equals(map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1], MONTAGNE)){
+        if(equals(map[ludophile.idxL][ludophile.idxC+1], MONTAGNE)){
             return false;
         }
 
@@ -405,16 +425,22 @@ class VivreOuSurvivre extends Program{
         Joueur ludophile = newJoueur();
         ludophile.personnage = "👨";
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 2;
         String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                                         {CHEMIN,CHEMIN,ludophile.personnage},
                                         {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(deplacementPossibleEst(ludophile, map));
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,MONTAGNE},
                              {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(deplacementPossibleEst(ludophile, map));
         
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
                              {CHEMIN,ludophile.personnage,CHEMIN},
                              {CHEMIN,CHEMIN,CHEMIN}};
@@ -426,8 +452,9 @@ class VivreOuSurvivre extends Program{
         if(!deplacementPossibleNord(ludophile, map)){
             kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
-            map[coordonnéeLigne(ludophile, map)-1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = CHEMIN;
+            map[ludophile.idxL-1][ludophile.idxC] = ludophile.personnage;
+            ludophile.idxL--;
+            map[ludophile.idxL+1][ludophile.idxC] = CHEMIN;
             afficherMap(map, ludophile);
             println();
         } 
@@ -438,8 +465,9 @@ class VivreOuSurvivre extends Program{
         if(!deplacementPossibleSud(ludophile, map)){
             kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
-            map[coordonnéeLigne(ludophile, map)+1][coordonnéeColonne(ludophile, map)] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
+            map[ludophile.idxL+1][ludophile.idxC] = ludophile.personnage;
+            ludophile.idxL++;
+            map[ludophile.idxL-1][ludophile.idxC] = CHEMIN;
             afficherMap(map, ludophile);
             println();
         }
@@ -451,8 +479,9 @@ class VivreOuSurvivre extends Program{
         if(!deplacementPossibleEst(ludophile, map)){
             kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)] = CHEMIN;
+            map[ludophile.idxL][ludophile.idxC+1] = ludophile.personnage;
+            ludophile.idxC++;
+            map[ludophile.idxL][ludophile.idxC-1] = CHEMIN;
             afficherMap(map, ludophile);
             println();
         }
@@ -463,8 +492,9 @@ class VivreOuSurvivre extends Program{
         if(!deplacementPossibleOuest(ludophile, map)){
             kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible !" + RESET);
         } else {
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)-1] = ludophile.personnage;
-            map[coordonnéeLigne(ludophile, map)][coordonnéeColonne(ludophile, map)+1] = CHEMIN;
+            map[ludophile.idxL][ludophile.idxC-1] = ludophile.personnage;
+            ludophile.idxC--;
+            map[ludophile.idxL][ludophile.idxC+1] = CHEMIN;
             afficherMap(map, ludophile);
             println();
         }
@@ -476,33 +506,41 @@ class VivreOuSurvivre extends Program{
             for(int cpt=0; cpt<nbCases; cpt++){
                 if(!deplacementPossibleNord(ludophile, map)){
                     cpt = nbCases;
+                    kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                } else {
+                    avancerNord(ludophile, map);
+                    delay(500);
                 }
-                avancerNord(ludophile, map);
-                delay(500);
             }
         } else if(nbChoix == 6){
             for(int cpt=0; cpt<nbCases; cpt++){
                 if(!deplacementPossibleEst(ludophile, map)){
                     cpt = nbCases;
+                    kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                } else {
+                    avancerEst(ludophile, map);
+                    delay(500);
                 }
-                avancerEst(ludophile, map);
-                delay(500);
             }
         } else if(nbChoix == 4){
             for(int cpt=0; cpt<nbCases; cpt++){
                 if(!deplacementPossibleOuest(ludophile, map)){
                     cpt = nbCases;
+                    kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                } else {
+                    avancerOuest(ludophile, map);
+                    delay(500);
                 }
-                avancerOuest(ludophile, map);
-                delay(500);
             }
         } else if(nbChoix == 2){
             for(int cpt=0; cpt<nbCases; cpt++){
                 if(!deplacementPossibleSud(ludophile, map)){
                     cpt = nbCases;
+                    kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                } else {
+                    avancerSud(ludophile, map);
+                    delay(500);
                 }
-                avancerSud(ludophile, map);
-                delay(500);
             }
         } else {
             kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
@@ -562,84 +600,6 @@ class VivreOuSurvivre extends Program{
     /* ================================================================== */
     /* Tout ce qui est relatif à la création et information du personnage */
     /* ================================================================== */
-
-    //Confirmera ou non le fait que map[idxL][idxC] contient le joueur
-    boolean estPersonnage(Joueur ludophile, String[][] map, int idxL, int idxC){
-        return equals(map[idxL][idxC], ludophile.personnage);
-    }
-
-    void testEstPersonnage(){
-        Joueur ludophile = newJoueur();
-        ludophile.personnage = "👨";
-        String[][] map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
-                                        {CHEMIN, ludophile.personnage, CHEMIN},
-                                        {CHEMIN, CHEMIN, CHEMIN}};
-
-        assertTrue(estPersonnage(ludophile, map, 1,1));
-        assertFalse(estPersonnage(ludophile, map, 0, 0));
-    }
-
-    //Coordonnées du joueur sur l'axe X
-    int coordonnéeLigne(Joueur ludophile, String[][] map){
-        int idxL = 0;
-        int idxC = 0;
-
-        while(!estPersonnage(ludophile, map, idxL, idxC)){
-            idxC++;
-            if(idxC>(length(map, 2)-1)){
-                idxL++;
-                idxC = 0;
-            }
-        }
-
-        return idxL;
-    }
-
-    void testCoordonnéeLigne(){
-        Joueur ludophile = newJoueur();
-        ludophile.personnage = "👨";
-
-        String[][] map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
-                                        {CHEMIN, ludophile.personnage, CHEMIN},
-                                        {CHEMIN, CHEMIN, CHEMIN}};
-        assertEquals(1, coordonnéeLigne(ludophile, map));
-
-        map = new String[][]{{CHEMIN, ludophile.personnage, CHEMIN},
-                             {CHEMIN, CHEMIN, CHEMIN},
-                             {CHEMIN, CHEMIN, CHEMIN}};
-        assertEquals(0, coordonnéeLigne(ludophile, map));
-    }
-
-    //Coordonnées du joueur sur l'axe Y
-    int coordonnéeColonne(Joueur ludophile, String[][] map){
-        int idxL = 0;
-        int idxC = 0;
-
-        while(!estPersonnage(ludophile, map, idxL, idxC)){
-            idxC++;
-            if(idxC>(length(map, 2)-1)){
-                idxL++;
-                idxC = 0;
-            }
-        }
-
-        return idxC;
-    }
-
-    void testCoordonnéeColonne(){
-        Joueur ludophile = newJoueur();
-        ludophile.personnage = "👨";
-
-        String[][] map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
-                                        {CHEMIN, ludophile.personnage, CHEMIN},
-                                        {CHEMIN, CHEMIN, CHEMIN}};
-        assertEquals(1, coordonnéeColonne(ludophile, map));
-
-        map = new String[][]{{CHEMIN, ludophile.personnage, CHEMIN},
-                             {CHEMIN, CHEMIN, CHEMIN},
-                             {CHEMIN, CHEMIN, CHEMIN}};
-        assertEquals(1, coordonnéeColonne(ludophile, map));
-    }
 
     //Genre du Joueur
     String genreJoueur(Joueur ludophile){
@@ -711,7 +671,7 @@ class VivreOuSurvivre extends Program{
 
     //Positionnement du Joueur
     String positionJoueur(Joueur ludophile, String[][] map){
-        ludophile.position = "[" + (coordonnéeLigne(ludophile, map)+1) + ";" + (coordonnéeColonne(ludophile, map)+1) + "]";
+        ludophile.position = "[" + (ludophile.idxL+1) + ";" + (ludophile.idxC+1) + "]";
         return ludophile.position;
     }
 
@@ -719,11 +679,15 @@ class VivreOuSurvivre extends Program{
         Joueur ludophile = newJoueur();
         ludophile.personnage = "👨";
 
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
         String[][] map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
                                         {CHEMIN, ludophile.personnage, CHEMIN},
                                         {CHEMIN, CHEMIN, CHEMIN}};
         assertEquals("[2;2]",positionJoueur(ludophile, map));
 
+        ludophile.idxL = 0;
+        ludophile.idxC = 0;
         map = new String[][]{{ludophile.personnage, CHEMIN, CHEMIN},
                              {CHEMIN, CHEMIN, CHEMIN},
                              {CHEMIN, CHEMIN, CHEMIN}};
@@ -743,29 +707,27 @@ class VivreOuSurvivre extends Program{
 
     //Retournera vrai si le Joueur a atteint l'objectif
     boolean objectifAtteint(Joueur ludophile, String[][] map, Objectif but){
-        if(equals(map[but.idxObjectifLigne][but.idxObjectifColonne], ludophile.personnage)){
-            return true;
-        }
-        return false;
+        return equals(map[but.idxObjectifLigne][but.idxObjectifColonne], but.DRAPEAU);
     }
 
     void testObjectifAtteint(){
         Joueur ludophile = newJoueur();
         Objectif but = newObjectif();
+        String[][] map;
 
         ludophile.personnage = "👨";
 
-        String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
-                                        {ludophile.personnage, CHEMIN, CHEMIN},
-                                        {CHEMIN,CHEMIN,CHEMIN}};
+        but.idxObjectifLigne = 0;
+        but.idxObjectifColonne = 1;
 
-
-        but.idxObjectifLigne = 1;
-        but.idxObjectifColonne = 0;
+        map = new String[][]{{CHEMIN,but.DRAPEAU,CHEMIN},
+                             {ludophile.personnage, CHEMIN, CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
         assertTrue(objectifAtteint(ludophile, map, but));
 
-        but.idxObjectifLigne = 0;
-        but.idxObjectifColonne = 0;
+        map = new String[][]{{CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
         assertFalse(objectifAtteint(ludophile, map, but));
     }
 
@@ -858,10 +820,15 @@ class VivreOuSurvivre extends Program{
     //Tutoriel pour avancer
     void avancerTutoriel(Joueur ludophile, Objectif but, String[][] map){
         remplissageMap(map);
+
         but.idxObjectifLigne = length(map,1)/2;
         but.idxObjectifColonne = length(map,2)/2;
+
+        ludophile.idxL = length(map,1)-1;
+        ludophile.idxC = length(map,2)/2;
+
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
-        map[length(map,1)-1][length(map,2)/2] = ludophile.personnage;
+        map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
 
         kaomijiOrateurln("On va commencer doucement. Avance jusqu'à atteindre le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8) du clavier pour avancer !");
@@ -885,10 +852,15 @@ class VivreOuSurvivre extends Program{
     //Tutoriel pour déplacement droite
     void droiteTutoriel(Joueur ludophile, Objectif but, String[][] map){
         remplissageMap(map);
+
         but.idxObjectifLigne = 0;
         but.idxObjectifColonne = length(map,2)-1;
+
+        ludophile.idxL = length(map,1)-1;
+        ludophile.idxC = length(map,2)/2;
+
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
-        map[length(map,1)-1][length(map,2)/2] = ludophile.personnage;
+        map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
 
         kaomijiOrateurln("Déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8) et (6) du clavier pour te déplacer!");
@@ -914,10 +886,15 @@ class VivreOuSurvivre extends Program{
     //Tutoriel déplacement vers la gauche
     void gaucheTutoriel(Joueur ludophile, Objectif but, String[][] map){
         remplissageMap(map);
+
         but.idxObjectifLigne = 0;
         but.idxObjectifColonne = 0;
+
+        ludophile.idxL = length(map,1)-1;
+        ludophile.idxC = length(map,2)/2;
+
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
-        map[length(map,1)-1][length(map,2)/2] = ludophile.personnage;
+        map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
 
         kaomijiOrateurln("Déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8), (6) et (4) du clavier pour te déplacer!");
@@ -945,10 +922,15 @@ class VivreOuSurvivre extends Program{
     //Tutoriel déplacement vers le bas
     void basTutoriel(Joueur ludophile, Objectif but, String[][] map){
         remplissageMap(map);
+
         but.idxObjectifLigne = length(map,1)-1;
         but.idxObjectifColonne = length(map,2)-1;
+
+        ludophile.idxL = 0;
+        ludophile.idxC = 0;
+
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
-        map[0][0] = ludophile.personnage;
+        map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
 
         kaomijiOrateurln("Déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (8), (6), (4) et (2) du clavier pour te déplacer!");
@@ -978,10 +960,15 @@ class VivreOuSurvivre extends Program{
     //Tutoriel déplacement en boucle à compteur
     void boucleCompteurTutoriel(Joueur ludophile, Objectif but, String[][] map){
         remplissageMap(map);
+
         but.idxObjectifLigne = length(map,1)-1;
         but.idxObjectifColonne = length(map,2)-1;
+
+        ludophile.idxL = 0;
+        ludophile.idxC = 0;
+
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
-        map[0][0] = ludophile.personnage;
+        map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
 
         kaomijiOrateurln("Déplace-toi jusqu'à ce que tu atteignes le drapeau rouge !");
         kaomijiOrateurln("Pour t'entraîner, appuie sur la touche (1) du clavier pour te déplacer!");
@@ -1005,7 +992,8 @@ class VivreOuSurvivre extends Program{
 
 
 
-    /* ============================================================ */
-    /* Tout ce qui booléen pour les boucles while() et alternatives */
-    /* ============================================================ */
+    /* ======================================================================= */
+    /* Tout ce qui conditon booléenne pour les boucles while() et alternatives */
+    /* ======================================================================= */
+    
 }

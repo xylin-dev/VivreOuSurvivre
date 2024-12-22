@@ -4,5 +4,8 @@ class Joueur{
     String personnage;
     int nbVie;
     int nbReussite;
+    
+    int idxL;
+    int idxC;
     String position;
 }

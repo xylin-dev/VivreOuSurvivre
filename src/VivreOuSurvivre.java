@@ -34,10 +34,10 @@ class VivreOuSurvivre extends Program{
     int nbReussite = 0;
 
     //Coordonné pour effet des éléments de la map
-    int[] idxBombe = new int[]{0,0,0,0,0,0,0,0};
-    int[] idxArbre = new int[]{0,0,0,0,0,0,0,0};
-    int[] idxLave = new int[]{0,0,0,0,0,0,0,0};
-    int[] idxCarte = new int[]{0,0,0,0,0,0,0,0};
+    int[] idxBombe = new int[8];
+    int[] idxArbre = new int[8];
+    int[] idxLave = new int[8];
+    int[] idxCarte = new int[8];
 
 
     void algorithm(){
@@ -996,10 +996,10 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln("Le chiffre auquel je pensais est : " + chiffre);
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
-                kaomijiOrateurln("TU AS UN BONUS");
+                kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
                 afficherMap(map, ludophile);
             } else {
-                kaomijiOrateurln("TU AS UN MALUS");
+                kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
                 afficherMap(map, ludophile);
             }
 
@@ -1027,10 +1027,10 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln("Le chiffre auquel je pensais est : " + chiffre);
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
-                kaomijiOrateurln("TU AS UN BONUS");
+                kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
                 afficherMap(map, ludophile);
             } else {
-                kaomijiOrateurln("TU AS UN MALUS");
+                kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
                 afficherMap(map, ludophile);
             }
 
@@ -1059,10 +1059,10 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln("Le chiffre auquel je pensais est : " + chiffre);
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
-                kaomijiOrateurln("TU AS UN BONUS");
+                kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
                 afficherMap(map, ludophile);
             } else {
-                kaomijiOrateurln("TU AS UN MALUS");
+                kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
                 afficherMap(map, ludophile);
             }
 
@@ -1090,10 +1090,10 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln("Le chiffre auquel je pensais est : " + chiffre);
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
-                kaomijiOrateurln("TU AS UN BONUS");
+                kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
                 afficherMap(map, ludophile);
             } else {
-                kaomijiOrateurln("TU AS UN MALUS");
+                kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
                 afficherMap(map, ludophile);
             }
 

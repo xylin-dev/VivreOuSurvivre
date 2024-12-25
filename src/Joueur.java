@@ -2,8 +2,9 @@ class Joueur{
     String nom;
     String genre;
     String personnage;
-    int nbVie;
-    int nbReussite;
+
+    int nbBouclier;
+    boolean immunite;
     
     int idxL;
     int idxC;

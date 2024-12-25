@@ -24,7 +24,6 @@ class VivreOuSurvivre extends Program{
 
     //Style du texte selon leurs fonctions
     final String GRAS = "\033[1m"; 
-    final String SOULIGNE = "\033[4m";
 
     //Nb de Vie du Joueur ainsi que son Nb de Vie Precedent pour Kaomiji
     int nbVie = 10;
@@ -43,17 +42,21 @@ class VivreOuSurvivre extends Program{
     void algorithm(){
         Joueur ludophile = newJoueur();
         Objectif but = newObjectif();
+        String jeu = "";
 
         String[][] map = new String[20][20];
 
         begin(ludophile, but);
-        
-        initialisationMap(map, ludophile, but);
-        afficherMap(map, ludophile);
-        println();
 
-        while(objectifAtteint(ludophile, map, but)){
-            deplacement(ludophile, map);
+        while(!equals(jeu, "Fini") || nbVie>0){
+            initialisationMap(map, ludophile, but);
+            afficherMap(map, ludophile);
+            println();
+            while(objectifAtteint(ludophile, map, but)){
+                deplacement(ludophile, map);
+            }
+            kaomijiOrateur("Tu veux continuer ? Appui sur [ENTER] pour continuer ou écrit (Fini) pour t'arrêter : ");
+            jeu = readString();
         }
     }
 
@@ -65,8 +68,8 @@ class VivreOuSurvivre extends Program{
     //Création de type : Joueur
     Joueur newJoueur(){
         Joueur ludophile = new Joueur();
-        ludophile.nbVie = nbVie;
-        ludophile.nbReussite = nbReussite;
+        ludophile.nbBouclier = 0;
+        ludophile.immunite = false;
         return ludophile;
     }
 
@@ -191,8 +194,8 @@ class VivreOuSurvivre extends Program{
 
     //Placement aléatoire de l'objectif du joueur dans la moitié de la map superieur
     void objectifMap(String[][] map, Objectif but){
-        but.idxObjectifLigne = (int)(random()*length(map, 1)/2);
-        but.idxObjectifColonne = (int)(random()*length(map, 2)/2);
+        but.idxObjectifLigne = (int)(random()*length(map, 1)/2)+1;
+        but.idxObjectifColonne = (int)(random()*length(map, 2)/2)+1;
 
         map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;
     }
@@ -217,6 +220,7 @@ class VivreOuSurvivre extends Program{
 
         objectifMap(map, but);
         placementJoueur(map, ludophile);
+        map[0][0] = MONTAGNE;
     }
 
     //Affichera la carte
@@ -672,9 +676,77 @@ class VivreOuSurvivre extends Program{
         assertEquals("[1;1]",positionJoueur(ludophile, map));
     }
 
-    //Affichage des informations (Nom, PV, Coordonnées, Reussite)
+    //Met en String l'état du bonus : immunité au malus
+    String immuniteToString(Joueur ludophile){
+        if(ludophile.immunite == true){
+            return "Activé";
+        }
+        return "Désactivé";
+    }
+
+    void testImmuniteToString(){
+        Joueur ludophile = newJoueur();
+
+        ludophile.immunite = true;
+        assertEquals("Activé", immuniteToString(ludophile));
+
+        ludophile.immunite = false;
+        assertEquals("Désactivé", immuniteToString(ludophile));
+    }
+
+    //PV du joueur sous forme de coeur
+    String nbCoeur(int nbLife){
+        String coeur = "";
+
+        for(int cpt=0; cpt<nbLife; cpt++){
+            coeur = coeur + "❤️";
+        }
+
+        if(equals(coeur, "")){
+            return "💔";
+        }
+
+        return coeur;
+    }
+
+    void testNbCoeur(){
+        int nbLife;
+
+        nbLife = 3;
+        assertEquals("❤️❤️❤️", nbCoeur(nbLife));
+
+        nbLife = 0;
+        assertEquals("💔", nbCoeur(nbLife));
+    }
+
+    //Bouclier du joueur sous forme de bouclier
+    String nbBouclier(Joueur ludophile){
+        String bouclier = "";
+
+        for(int cpt=0; cpt<ludophile.nbBouclier; cpt++){
+            bouclier = bouclier + "🛡️";
+        }
+
+        if(equals(bouclier, "")){
+            return "0";
+        }
+
+        return bouclier;
+    }
+
+    void testNbBouclier(){
+        Joueur ludophile = newJoueur();
+
+        ludophile.nbBouclier = 3;
+        assertEquals("🛡️🛡️🛡️", nbBouclier(ludophile));
+
+        ludophile.nbBouclier = 0;
+        assertEquals("0", nbBouclier(ludophile));
+    }
+
+    //Affichage des informations (Nom, PV, Coordonnées, Reussite...)
     void informationJoueur(Joueur ludophile, String[][] map){
-        print(GRAS + ludophile.nom + " - PV: " + nbVie + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Nombre de Reussite: " + nbReussite + RESET);
+        print(GRAS + ludophile.nom + " - PV: " + nbCoeur(nbVie) + " ; Coordonées: " + positionJoueur(ludophile, map) + " ; Bouclier: " + nbBouclier(ludophile) + " ; Immunité: " + immuniteToString(ludophile) + " ; Reussite: " + nbReussite + RESET);
     }
 
 
@@ -715,7 +787,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxBombe[0]][idxBombe[1]], ludophile.personnage)){
             delay(500);
             map[idxBombe[0]][idxBombe[1]] = EXPLOSION;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Attention ! Tu as touché une bombe, fais super gaffe !" + RESET);
@@ -736,7 +814,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxBombe[2]][idxBombe[3]], ludophile.personnage)){
             delay(500);
             map[idxBombe[2]][idxBombe[3]] = EXPLOSION;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Attention ! Tu as touché une bombe, fais super gaffe !" + RESET);
@@ -757,7 +841,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxBombe[4]][idxBombe[5]], ludophile.personnage)){
             delay(500);
             map[idxBombe[4]][idxBombe[5]] = EXPLOSION;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Attention ! Tu as touché une bombe, fais super gaffe !" + RESET);
@@ -778,7 +868,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxBombe[6]][idxBombe[7]], ludophile.personnage)){
             delay(500);
             map[idxBombe[6]][idxBombe[7]] = EXPLOSION;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Attention ! Tu as touché une bombe, fais super gaffe !" + RESET);
@@ -804,7 +900,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxArbre[0]][idxArbre[1]], ludophile.personnage) && probabilite>0.5){
             delay(500);
             map[idxArbre[0]][idxArbre[1]] = COCO;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Oups ! Une énorme noix de coco est tombée sur ta tête, vraiment pas de chance !" + RESET);
@@ -825,7 +927,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxArbre[2]][idxArbre[3]], ludophile.personnage) && probabilite>0.5){
             delay(500);
             map[idxArbre[2]][idxArbre[3]] = COCO;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Oups ! Une énorme noix de coco est tombée sur ta tête, vraiment pas de chance !" + RESET);
@@ -847,7 +955,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxArbre[4]][idxArbre[5]], ludophile.personnage) && probabilite>0.5){
             delay(500);
             map[idxArbre[4]][idxArbre[5]] = COCO;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Oups ! Une énorme noix de coco est tombée sur ta tête, vraiment pas de chance !" + RESET);
@@ -869,7 +983,13 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxArbre[6]][idxArbre[7]], ludophile.personnage) && probabilite>0.5){
             delay(500);
             map[idxArbre[6]][idxArbre[7]] = COCO;
-            nbVie--;
+            
+            if(ludophile.nbBouclier>0){
+                ludophile.nbBouclier--;
+            } else {
+                nbVie--;
+            }
+            
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "Oups ! Une énorme noix de coco est tombée sur ta tête, vraiment pas de chance !" + RESET);
@@ -894,7 +1014,15 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxLave[0]][idxLave[1]], ludophile.personnage)){
             delay(500);
             map[idxLave[0]][idxLave[1]] = BRULE;
-            nbVie = nbVie - 5;
+            
+            for(int cpt=0; cpt<5; cpt++){
+                if(ludophile.nbBouclier>0){
+                    ludophile.nbBouclier--;
+                } else {
+                    nbVie--;
+                }
+            }
+
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "C'est dangereux de sauter dans la lave, tu es malade de faire ça !" + RESET);
@@ -915,7 +1043,15 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxLave[2]][idxLave[3]], ludophile.personnage)){
             delay(500);
             map[idxLave[2]][idxLave[3]] = BRULE;
-            nbVie = nbVie - 5;
+            
+            for(int cpt=0; cpt<5; cpt++){
+                if(ludophile.nbBouclier>0){
+                    ludophile.nbBouclier--;
+                } else {
+                    nbVie--;
+                }
+            }
+
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "C'est dangereux de sauter dans la lave, tu es malade de faire ça !" + RESET);
@@ -936,7 +1072,15 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxLave[4]][idxLave[5]], ludophile.personnage)){
             delay(500);
             map[idxLave[4]][idxLave[5]] = BRULE;
-            nbVie = nbVie - 5;
+            
+            for(int cpt=0; cpt<5; cpt++){
+                if(ludophile.nbBouclier>0){
+                    ludophile.nbBouclier--;
+                } else {
+                    nbVie--;
+                }
+            }
+
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "C'est dangereux de sauter dans la lave, tu es malade de faire ça !" + RESET);
@@ -957,7 +1101,15 @@ class VivreOuSurvivre extends Program{
         if(equals(map[idxLave[6]][idxLave[7]], ludophile.personnage)){
             delay(500);
             map[idxLave[6]][idxLave[7]] = BRULE;
-            nbVie = nbVie - 5;
+            
+            for(int cpt=0; cpt<5; cpt++){
+                if(ludophile.nbBouclier>0){
+                    ludophile.nbBouclier--;
+                } else {
+                    nbVie--;
+                }
+            }
+
             afficherMap(map, ludophile);
             println();
             kaomijiOrateurln(GRAS + ROUGE + "C'est dangereux de sauter dans la lave, tu es malade de faire ça !" + RESET);
@@ -983,8 +1135,8 @@ class VivreOuSurvivre extends Program{
 
         //Si la carte se trouve au-dessus du joueur
         if(equals(map[idxCarte[0]][idxCarte[1]], ludophile.personnage)){
-            kaomijiOrateurln(VERT + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
-            kaomijiOrateurln(VERT + "Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?" + RESET);
+            kaomijiOrateurln(BLEU + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
+            kaomijiOrateurln("Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?");
             kaomijiOrateur("Choix [PAIR ; IMPAIR]: ");
             decision = readString();
 
@@ -997,10 +1149,10 @@ class VivreOuSurvivre extends Program{
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
                 kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
-                afficherMap(map, ludophile);
+                bonus(ludophile, map);
             } else {
                 kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
-                afficherMap(map, ludophile);
+                malus(ludophile, map);
             }
 
             idxCarte[0] = 0;
@@ -1014,8 +1166,8 @@ class VivreOuSurvivre extends Program{
 
         //Si la carte se trouve en dessous du joueur
         if(equals(map[idxCarte[2]][idxCarte[3]], ludophile.personnage)){
-            kaomijiOrateurln(VERT + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
-            kaomijiOrateurln(VERT + "Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?" + RESET);
+            kaomijiOrateurln(BLEU + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
+            kaomijiOrateurln("Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?");
             kaomijiOrateur("Choix [PAIR ; IMPAIR]: ");
             decision = readString();
 
@@ -1028,10 +1180,10 @@ class VivreOuSurvivre extends Program{
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
                 kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
-                afficherMap(map, ludophile);
+                bonus(ludophile, map);
             } else {
                 kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
-                afficherMap(map, ludophile);
+                malus(ludophile, map);
             }
 
             idxCarte[2] = 0;
@@ -1046,8 +1198,8 @@ class VivreOuSurvivre extends Program{
 
         //Si la carte se trouve à droite du joueur
         if(equals(map[idxCarte[4]][idxCarte[5]], ludophile.personnage)){
-            kaomijiOrateurln(VERT + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
-            kaomijiOrateurln(VERT + "Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?" + RESET);
+            kaomijiOrateurln(BLEU + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
+            kaomijiOrateurln("Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?");
             kaomijiOrateur("Choix [PAIR ; IMPAIR]: ");
             decision = readString();
 
@@ -1060,10 +1212,10 @@ class VivreOuSurvivre extends Program{
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
                 kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
-                afficherMap(map, ludophile);
+                bonus(ludophile, map);
             } else {
                 kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
-                afficherMap(map, ludophile);
+                malus(ludophile, map);
             }
 
             idxCarte[4] = 0;
@@ -1077,8 +1229,8 @@ class VivreOuSurvivre extends Program{
 
         //Si la carte se trouve à gauche du joueur
         if(equals(map[idxCarte[6]][idxCarte[7]], ludophile.personnage)){
-            kaomijiOrateurln(VERT + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
-            kaomijiOrateurln(VERT + "Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?" + RESET);
+            kaomijiOrateurln(BLEU + "Tu as tiré une carte événement ! Attention, c’est du 50/50, tu peux soit gagner un bonus, soit subir un malus, tout dépend de ta réponse !" + RESET);
+            kaomijiOrateurln("Je pense à un chiffre entre 1 et 10, tu crois qu'il est pair ou impair ?");
             kaomijiOrateur("Choix [PAIR ; IMPAIR]: ");
             decision = readString();
 
@@ -1091,10 +1243,10 @@ class VivreOuSurvivre extends Program{
 
             if((chiffre%2 == 0 && equals(decision, "PAIR")) || (chiffre%2 == 1 && equals(decision, "IMPAIR"))){
                 kaomijiOrateurln(GRAS + VERT + "TU AS UN BONUS !" + RESET);
-                afficherMap(map, ludophile);
+                bonus(ludophile, map);
             } else {
                 kaomijiOrateurln(GRAS + ROUGE + "TU AS UN MALUS !" + RESET);
-                afficherMap(map, ludophile);
+                malus(ludophile, map);
             }
 
             idxCarte[6] = 0;
@@ -1114,6 +1266,142 @@ class VivreOuSurvivre extends Program{
     /* Tout ce qui concerne les bonus, les malus et ce que dit Kaomiji en fonction des PV */
     /* ================================================================================== */
 
+    //Les bonus
+    void bonus(Joueur ludophile, String[][] map){
+        String saisie;
+        int choix;
+
+        kaomijiOrateurln("Youpi ! Tu as gagné un bonus ! 🎉");
+        kaomijiOrateurln("Choisis ce que tu veux parmi les bonus suivants ! (Tant que tu n'as pas atteint leur max.) : ");
+        println(espacement(maitreKaomiji(nbVie) + " - ") + "0: Rien.");
+        println(espacement(maitreKaomiji(nbVie) + " - ") + "1: Récuperez des PV (max. 10): ❤️");
+        println(espacement(maitreKaomiji(nbVie) + " - ") + "2: Obtenir un bouclier (max. 5): 🛡️");
+        println(espacement(maitreKaomiji(nbVie) + " - ") + "3: Obtenir une immunité contre des malus (max. 1): 💊");
+        print("Choix: ");
+        saisie = readString();
+
+        while(stringtoInt(saisie)<0 || stringtoInt(saisie)>3){
+            kaomijiOrateur(ROUGE + "Ton choix n'est pas bon, essaie encore : " + RESET);
+            saisie = readString();
+        }
+
+        choix = stringtoInt(saisie);
+
+        if(choix == 0){
+            kaomijiOrateurln("Pas de bonus ? Alors, continuons !");
+            afficherMap(map, ludophile);
+        } else if(choix == 1){
+            if(nbVie < 10){
+                kaomijiOrateurln("Voilà, je te file un PV !");
+                map[ludophile.idxL][ludophile.idxC] = "🥰";
+                nbVie++;
+                afficherMap(map, ludophile);
+                delay(1000);
+                map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
+                afficherMap(map, ludophile);
+                println();
+            } else {
+                kaomijiOrateurln("Ton PV est déjà au max... On recommence !");
+                bonus(ludophile, map);
+            }
+        } else if(choix == 2){
+            if(ludophile.nbBouclier < 5){
+                kaomijiOrateurln("Voilà, je te file un bouclier !");
+                map[ludophile.idxL][ludophile.idxC] = "🛡️";
+                ludophile.nbBouclier++;
+                afficherMap(map, ludophile);
+                delay(1000);
+                map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
+                afficherMap(map, ludophile);
+                println();
+            } else {
+                kaomijiOrateurln("Ton nombre de bouclier est déjà au max... On recommence !");
+                bonus(ludophile, map);
+            }
+        } else if(choix == 3){
+            kaomijiOrateurln("Activation de l'immunité...");
+            map[ludophile.idxL][ludophile.idxC] = "💊";
+            ludophile.immunite = true;
+            afficherMap(map, ludophile);
+            delay(1000);
+            map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
+            afficherMap(map, ludophile);
+            println();
+        }
+    }
+
+    //Les malus
+    void malus(Joueur ludophile, String[][] map){
+        Objectif but = newObjectif();
+
+        kaomijiOrateurln("Désolé, mais tu as un malus !");
+        kaomijiOrateurln("Le plus rigolo, c’est que c’est moi qui décide !");
+        kaomijiOrateurln(ROUGE + "QUE VAIS-JE FAIRE?!" + RESET);
+        
+        int random = (int) (random()*3)+1;
+        delay(1000);
+
+        if(ludophile.immunite == true){
+            kaomijiOrateurln(VERT + "Mais malheureusement... Tu as une immunité contre les malus... Quelle tristesse !" + RESET);
+            kaomijiOrateurln(JAUNE + "Désactivation de l'immunité..." + RESET);
+            ludophile.immunite = false;
+            afficherMap(map, ludophile);
+        } else {
+            if(random == 1){
+                kaomijiOrateurln("Un joli petit météore va te faire plaisir !");
+                map[ludophile.idxL][ludophile.idxC] = "☄️";
+                afficherMap(map, ludophile);
+                delay(1000);
+                map[ludophile.idxL][ludophile.idxC] = "💥";
+                nbVie = nbVie - 2;
+                afficherMap(map, ludophile);
+                delay(1000);
+                map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
+                afficherMap(map, ludophile);
+                kaomijiOrateurln(JAUNE + "Attention, tu as perdu 2 ❤️" + RESET);
+                println();
+            } else if(random == 2) {
+                kaomijiOrateurln("Et si on déplaçait le drapeau ? :)");
+                kaomijiOrateurln("Pourquoi je demande ton avis... ?");
+
+                map[but.idxObjectifLigne][but.idxObjectifColonne] = CHEMIN;
+
+                but.idxObjectifLigne = (int)(random()*length(map, 1)-1)+1;
+                but.idxObjectifColonne = (int)(random()*length(map, 2)-1)+1;
+
+                map[but.idxObjectifLigne][but.idxObjectifColonne] = but.DRAPEAU;  
+
+                afficherMap(map, ludophile);
+                kaomijiOrateurln("TADAAAA, bonne chance !");   
+                println();       
+            } else if(random == 3){
+                kaomijiOrateurln("Connais-tu le spinjitsu ?");
+                kaomijiOrateurln(ROUGE + "ATTENTION... TORNADE !" + RESET);
+                map[ludophile.idxL][ludophile.idxC] = "🌪️";
+                afficherMap(map, ludophile);
+
+                for(int cpt = 0; cpt<2; cpt++){
+                    int direction = (int) (random()*5)+1;
+                    for(int clc = 0; clc<direction; clc++){
+                        if(direction<2){
+                            avancerNord(ludophile, map);
+                        } else if(direction == 3){
+                            avancerOuest(ludophile, map);
+                        } else if(direction>3){
+                            avancerSud(ludophile, map);
+                            avancerEst(ludophile, map);
+                        }
+                    }
+                }
+
+                map[ludophile.idxL][ludophile.idxC] = ludophile.personnage;
+                afficherMap(map, ludophile);
+                kaomijiOrateurln(JAUNE + "Tu dois avoir des vertiges, et tu peux pas bouger pendant 3 secondes !" + RESET);
+                delay(3000);
+                println();
+            }
+        }
+    }
 
 
 
@@ -1123,7 +1411,7 @@ class VivreOuSurvivre extends Program{
     void begin(Joueur ludophile, Objectif but){
         creationPersonnage(ludophile);
         tutoriel(ludophile, but);
-        delay(1000);
+        reglement(ludophile);
     }
 
     //Introduction et création du personnage lors du démarrage du jeu
@@ -1141,11 +1429,11 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateurln(ludophile.nom + "? Super ton nom ! Avant de commencer à t'apprendre les bases des algorithmes, il faut d'abord créer ton personnage.");
         genreJoueur(ludophile);
         delay(1000);
-        kaomijiOrateurln("Tu es donc du genre " + ludophile.genre + " !");
         personnageJoueur(ludophile);
         delay(1000);
         recaputilatif(ludophile);
         delay(1000);
+        println();
     }
 
     //Tutoriel Global
@@ -1196,7 +1484,46 @@ class VivreOuSurvivre extends Program{
             println();
             delay(1000);
         }
+        println();
     }
+
+    //Règlement
+    void reglement(Joueur ludophile){
+        String confirmateur;
+        kaomijiOrateurln(GRAS + "Avant de commencer à jouer, je veux vous rappeler les règles.\n" + RESET);
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Drapeau : Le joueur doit atteindre le drapeau \"🚩 \" en utilisant un algorithme, en s'aidant d'un ensemble d'outils mis à sa disposition.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Début de la carte : Si le drapeau n’est pas atteint à la fin de l'algorithme, le joueur devra recommencer depuis le début de la carte.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Obstacles : Les bombes explosées ou autres éléments de la carte ne réapparaîtront pas une fois rencontrés.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Point de Vie (❤️ ) : Le joueur commence avec un total de 10 ❤️ .");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Déplacement : Le joueur peut se déplacer librement sur les chemins \"⬛ \" comme bon lui semble.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Bombe : Si le joueur touche une bombe \"💣 \", il perd 1 ❤️ .");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Lave : Si le joueur touche la lave \"🌋 \", il perd 5 de ses ❤️ .");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Arbre : Si le joueur essaie de traverser un arbre \"🌴 \", il a 50 % de chances de prendre des dégâts.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Montagne : Le joueur ne peut pas traverser la montagne \"🗻 \".");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Cartes événements : Des cartes événements \"🎴 \" peuvent donner des bonus ou des malus au joueur.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Bouclier : Le bouclier \"🛡️ \" protège le joueur contre tous les dégâts, agissant comme un deuxième PV (max. 5).");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Immunité : L'immunité contre les malus n'est pas stackable.");
+        delay(1000);
+        println(espacement(maitreKaomiji(nbVie)) + " • Pertes de ❤️  : Lorsque le joueur perd des ❤️ , Kaomiji s’énerve. Si les ❤️  du joueur atteignent 0, soit \"💔 \", Kaomiji abattra le joueur.\n");
+        delay(1000);
+        kaomijiOrateur(GRAS + "Quand tu seras prêt et que tu auras bien lu les règles, appuie sur [ENTER] pour commencer à jouer." + RESET);
+        confirmateur = readString();
+        delay(1000);
+    }
+
+
 
 
 

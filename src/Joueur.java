@@ -3,6 +3,7 @@ class Joueur{
     String genre;
     String personnage;
 
+    boolean tutoriel;
     int nbBouclier;
     boolean immunite;
     

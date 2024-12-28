@@ -57,7 +57,7 @@ class VivreOuSurvivre extends Program{
             }
             if(nbVie>0){
                 nbReussite++;
-                kaomijiOrateurln(VERT + "Félicitations ! Ton nombre de réussites a augmenté : " + nbReussite);
+                kaomijiOrateurln(VERT + "Félicitations ! Ton nombre de réussites a augmenté : " + nbReussite + RESET);
                 kaomijiOrateur("Tu veux continuer ? Appui sur [ENTER] pour continuer ou écrit (Fini) pour t'arrêter : ");
                 jeu = readString();
             }
@@ -595,6 +595,10 @@ class VivreOuSurvivre extends Program{
         int idx;
         String saisie;
 
+        for(int i=0; i<length(algorithm); i++){
+            algorithm[i] = 0;
+        }
+
         delay(1000);
 
         if(nbReussite < 2){
@@ -605,7 +609,6 @@ class VivreOuSurvivre extends Program{
             println(espacement(maitreKaomiji(nbVie)) + " • [2] : ⬇️  Déplacement vers le bas");
             println(espacement(maitreKaomiji(nbVie)) + " • [4] : ⬅️  Déplacement vers la gauche");
             println(espacement(maitreKaomiji(nbVie)) + " • [6] : ➡️  Déplacement vers la droite");
-            //println(espacement(maitreKaomiji(nbVie)) + " • [5] : ↪️ Déplacement en alternative");
             println(espacement(maitreKaomiji(nbVie)) + " • [1] : 🔁 Déplacement en boucle \"POUR\"");
             println(espacement(maitreKaomiji(nbVie)) + " • [3] : 🔄️ Déplacement en boucle \"TANT QUE\"");
             println(espacement(maitreKaomiji(nbVie)) + " • [0] : ✅ Confirmez votre algorithme : entre 1 et 20 instructions." + RESET);
@@ -631,6 +634,7 @@ class VivreOuSurvivre extends Program{
         }
 
         println();
+        delay(1000);
 
         return algorithm;
     }
@@ -644,7 +648,7 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateurln("Avant d'exécuter votre algorithme, confirmez que c'est bien ce que vous voulez exécuter : ");
         idx = 0;
 
-        while(algorithm[idx] != 0 && idx<length(algorithm)){
+        while(idx<length(algorithm) && algorithm[idx] != 0){
             if(algorithm[idx] == 8){
                 println(espacement(maitreKaomiji(nbVie)) + " • [8] : Déplacement vers le haut");
             } else if(algorithm[idx] == 2){
@@ -684,13 +688,17 @@ class VivreOuSurvivre extends Program{
         int[] algorithm = confirmationAlgorithme(ludophile, map);
         int idx = 0;
 
-        while(algorithm[idx] != 0 && idx<length(algorithm)){
+        while(objectifPasAtteint(ludophile, map, but) && nbVie > 0 && idx<length(algorithm) && algorithm[idx] != 0){
             deplacement(algorithm[idx], ludophile, map);
             idx++;
             delay(500);
         }
 
-        if(objectifPasAtteint(ludophile, map, but) && algorithm[idx] == 0){
+        if(idx == length(algorithm)){
+            idx--;
+        }
+
+        if(objectifPasAtteint(ludophile, map, but) && (idx == length(algorithm)-1 || algorithm[idx] == 0)){
             kaomijiOrateurln(JAUNE + "Il semblerait que ton algorithme ne soit pas correct ou que tu n'aies pas eu de chance..." + RESET);
             map[ludophile.idxL][ludophile.idxC] = CHEMIN;
             placementJoueur(map, ludophile);
@@ -1385,6 +1393,7 @@ class VivreOuSurvivre extends Program{
         delay(1000);
         personnageJoueur(ludophile);
         delay(1000);
+        println();
         recaputilatif(ludophile);
         delay(1000);
         println();
@@ -1405,7 +1414,7 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln("Pour ce tutoriel, je te conseille" + BLEU + " d'utiliser le pavé numérique " + RESET + "pour entrer les valeurs des déplacements qui lui correspondent.");
             kaomijiOrateurln(JAUNE + "PS: Tu ne gagnes pas de points de réussite. ;^;" + RESET);
             println();
-            kaomijiOrateur("Appuie sur (ENTER) pour commencer le tutoriel !");
+            kaomijiOrateur("Appuie sur [ENTER] pour commencer le tutoriel !");
             choix = readString();
             println();
             delay(1000);
@@ -1428,7 +1437,7 @@ class VivreOuSurvivre extends Program{
             println(espacement(maitreKaomiji(nbVie) + " - ") + BLEU + "La boucle \"tant que\" : C'est quand tu fais quelque chose encore et encore, tant qu'une condition est vraie.\n" + RESET +
                              espacement(maitreKaomiji(nbVie) + " - ") + "Par exemple, \"Continue de sauter tant que tu n'as pas touché le sol\". Tu répètes jusqu'à ce que ça change.\n");
             delay(1000);
-            kaomijiOrateur("Si tu es prêt à commencer avec les boucles à compteur, aka la boucle \"pour\", appuie sur la touche (ENTER) de ton clavier ! ");
+            kaomijiOrateur("Si tu es prêt à commencer avec les boucles à compteur, aka la boucle \"pour\", appuie sur la touche [ENTER] de ton clavier ! ");
             choix = readString();
             println();
             delay(1000);
@@ -1977,6 +1986,7 @@ class VivreOuSurvivre extends Program{
 
     //Choix de condition et déplacement pour les boucles while()
     void choixDeplacementWhile(int nbChoix, Joueur ludophile, String[][] map){
+        Objectif but = newObjectif();
         String choix = "";
 
         if(nbChoix == 8){
@@ -1994,6 +2004,7 @@ class VivreOuSurvivre extends Program{
             if(equals(choix, "a")){
                 if(!estCheminNord(ludophile, map)){
                     kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                    erreurAlgorithme(ludophile, map, but);
                 }
                 while(estCheminNord(ludophile, map)){
                     avancerNord(ludophile, map);
@@ -2016,6 +2027,7 @@ class VivreOuSurvivre extends Program{
             if(equals(choix, "a")){
                 if(!estCheminEst(ludophile, map)){
                     kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                    erreurAlgorithme(ludophile, map, but);
                 }
                 while(estCheminEst(ludophile, map)){
                     avancerEst(ludophile, map);
@@ -2038,6 +2050,7 @@ class VivreOuSurvivre extends Program{
             if(equals(choix, "a")){
                 if(!estCheminOuest(ludophile, map)){
                     kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                    erreurAlgorithme(ludophile, map, but);
                 }
                 while(estCheminOuest(ludophile, map)){
                     avancerOuest(ludophile, map);
@@ -2060,6 +2073,7 @@ class VivreOuSurvivre extends Program{
             if(equals(choix, "a")){
                 if(!estCheminSud(ludophile, map)){
                     kaomijiOrateurln(JAUNE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                    erreurAlgorithme(ludophile, map, but);
                 }
                 while(estCheminSud(ludophile, map)){
                     avancerSud(ludophile, map);

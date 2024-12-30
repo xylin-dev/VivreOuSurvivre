@@ -192,7 +192,7 @@ class VivreOuSurvivre extends Program{
         int idxLigneAleatoire = (int)(random()*length(map, 1));
         int idxColonneAleatoire = (int)(random()*length(map, 2));
 
-        if(probabiliteAleatoire>probabilite){
+        if(probabiliteAleatoire<probabilite){
             map[idxLigneAleatoire][idxColonneAleatoire] = tab[idxAleatoire];
         }
     }
@@ -219,7 +219,7 @@ class VivreOuSurvivre extends Program{
 
         remplissageMap(map);
 
-        for(int cpt=0; cpt<(length(map, 1)*length(map,2))/3; cpt++){
+        for(int cpt=0; cpt<(length(map, 1)*length(map,2)); cpt++){
             elementMap(map, element, probabilite);
         }
 
@@ -641,44 +641,47 @@ class VivreOuSurvivre extends Program{
 
     //Confirmer si l'algorithme est bon
     int[] confirmationAlgorithme(Joueur ludophile, String[][] map){
-        int[] algorithm = creationAlgorithme();
+        int[] algorithm = new int[20]; 
         int idx;
-        String saisie = "";
+        String saisie = "0";
 
-        kaomijiOrateurln("Avant d'exécuter votre algorithme, confirmez que c'est bien ce que vous voulez exécuter : ");
-        idx = 0;
+        while(!equals(saisie, "")){
+            algorithm = creationAlgorithme();
 
-        while(idx<length(algorithm) && algorithm[idx] != 0){
-            if(algorithm[idx] == 8){
-                println(espacement(maitreKaomiji(nbVie)) + " • [8] : Déplacement vers le haut");
-            } else if(algorithm[idx] == 2){
-                println(espacement(maitreKaomiji(nbVie)) + " • [2] : Déplacement vers le bas");
-            } else if(algorithm[idx] == 4){
-                println(espacement(maitreKaomiji(nbVie)) + " • [4] : Déplacement vers la gauche");
-            } else if(algorithm[idx] == 6){
-                println(espacement(maitreKaomiji(nbVie)) + " • [6] : Déplacement vers la droite");
-            } else if(algorithm[idx] == 1){
-                println(espacement(maitreKaomiji(nbVie)) + " • [1] : Déplacement en boucle \"POUR\"");
-            } else if(algorithm[idx] == 3){
-                println(espacement(maitreKaomiji(nbVie)) + " • [3] : Déplacement en boucle \"TANT QUE\"");
+            kaomijiOrateurln("Avant d'exécuter votre algorithme, confirmez que c'est bien ce que vous voulez exécuter : ");
+            idx = 0;
+
+            while(idx<length(algorithm) && algorithm[idx] != 0){
+                if(algorithm[idx] == 8){
+                    println(espacement(maitreKaomiji(nbVie)) + " • [8] : Déplacement vers le haut");
+                } else if(algorithm[idx] == 2){
+                    println(espacement(maitreKaomiji(nbVie)) + " • [2] : Déplacement vers le bas");
+                } else if(algorithm[idx] == 4){
+                    println(espacement(maitreKaomiji(nbVie)) + " • [4] : Déplacement vers la gauche");
+                } else if(algorithm[idx] == 6){
+                    println(espacement(maitreKaomiji(nbVie)) + " • [6] : Déplacement vers la droite");
+                } else if(algorithm[idx] == 1){
+                    println(espacement(maitreKaomiji(nbVie)) + " • [1] : Déplacement en boucle \"POUR\"");
+                } else if(algorithm[idx] == 3){
+                    println(espacement(maitreKaomiji(nbVie)) + " • [3] : Déplacement en boucle \"TANT QUE\"");
+                }
+                idx++;
             }
+            
+            kaomijiOrateur(GRAS + "Est-ce bien ce que vous souhaitez exécuter ? [ENTER] : Oui ; [0] : Non " + RESET);
+            saisie = readString();
 
-            idx++;
+            if(!equals(saisie, "")){
+                println();
+                kaomijiOrateurln(VERT + "Alors recommençons !" + RESET);
+                afficherMap(map, ludophile);
+                println();
+            } 
         }
-        kaomijiOrateur(GRAS + "Est-ce bien ce que vous souhaitez exécuter ? [ENTER] : Oui ; [0] : Non " + RESET);
-        saisie = readString();
 
-        if(!equals(saisie, "")){
-            println();
-            kaomijiOrateurln(VERT + "Alors recommençons !" + RESET);
-            afficherMap(map, ludophile);
-            println();
-            algorithm = confirmationAlgorithme(ludophile, map);
-        } else {
-            println();
-            kaomijiOrateurln(GRAS + "Commençons l'exécution de l'algorithme !" + RESET);
-            println();
-        }
+        println();
+        kaomijiOrateurln(GRAS + "Commençons l'exécution de l'algorithme !" + RESET);
+        println();
 
         return algorithm;
     }
@@ -1462,6 +1465,9 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln(GRAS + BLEU + "Pour rappel, un algorithme est une suite d'instructions à suivre dans un ordre précis pour atteindre ton objectif." + RESET);
             kaomijiOrateurln("Grâce à ces outils, tu peux maintenant créer des algorithmes pour résoudre différents problèmes ou accomplir des tâches de manière logique et organisée.");
             ludophile.tutoriel = false;
+            println();
+            kaomijiOrateur(GRAS + "Si tu es prêt à commencer réellement le jeu, appuie sur la touche [ENTER] de ton clavier !" + RESET);
+            choix = readString();
         }
         println();
     }
@@ -1935,52 +1941,54 @@ class VivreOuSurvivre extends Program{
     void choixDeplacementBoucle(int nbChoix, int nbCases, Joueur ludophile, String[][] map){
         Objectif but = newObjectif();
 
-        if(nbChoix == 8){
-            for(int cpt=0; cpt<nbCases; cpt++){
-                if(!deplacementPossibleNord(ludophile, map)){
-                    cpt = nbCases;
-                    kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
-                    erreurAlgorithme(ludophile, map, but);
-                } else {
-                    avancerNord(ludophile, map);
-                    delay(500);
+        if(nbVie > 0){
+            if(nbChoix == 8){
+                for(int cpt=0; cpt<nbCases; cpt++){
+                    if(!deplacementPossibleNord(ludophile, map)){
+                        cpt = nbCases;
+                        kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                        erreurAlgorithme(ludophile, map, but);
+                    } else {
+                        avancerNord(ludophile, map);
+                        delay(500);
+                    }
                 }
-            }
-        } else if(nbChoix == 6){
-            for(int cpt=0; cpt<nbCases; cpt++){
-                if(!deplacementPossibleEst(ludophile, map)){
-                    cpt = nbCases;
-                    kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
-                    erreurAlgorithme(ludophile, map, but);
-                } else {
-                    avancerEst(ludophile, map);
-                    delay(500);
+            } else if(nbChoix == 6){
+                for(int cpt=0; cpt<nbCases; cpt++){
+                    if(!deplacementPossibleEst(ludophile, map)){
+                        cpt = nbCases;
+                        kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                        erreurAlgorithme(ludophile, map, but);
+                    } else {
+                        avancerEst(ludophile, map);
+                        delay(500);
+                    }
                 }
-            }
-        } else if(nbChoix == 4){
-            for(int cpt=0; cpt<nbCases; cpt++){
-                if(!deplacementPossibleOuest(ludophile, map)){
-                    cpt = nbCases;
-                    kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
-                    erreurAlgorithme(ludophile, map, but);
-                } else {
-                    avancerOuest(ludophile, map);
-                    delay(500);
+            } else if(nbChoix == 4){
+                for(int cpt=0; cpt<nbCases; cpt++){
+                    if(!deplacementPossibleOuest(ludophile, map)){
+                        cpt = nbCases;
+                        kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                        erreurAlgorithme(ludophile, map, but);
+                    } else {
+                        avancerOuest(ludophile, map);
+                        delay(500);
+                    }
                 }
-            }
-        } else if(nbChoix == 2){
-            for(int cpt=0; cpt<nbCases; cpt++){
-                if(!deplacementPossibleSud(ludophile, map)){
-                    cpt = nbCases;
-                    kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
-                    erreurAlgorithme(ludophile, map, but);
-                } else {
-                    avancerSud(ludophile, map);
-                    delay(500);
+            } else if(nbChoix == 2){
+                for(int cpt=0; cpt<nbCases; cpt++){
+                    if(!deplacementPossibleSud(ludophile, map)){
+                        cpt = nbCases;
+                        kaomijiOrateurln(ROUGE + "Ce déplacement n'est pas possible. N'oublie pas, l'ordinateur fait juste ce que tu lui dis de faire, même si ça n'a pas l'air correcte !" + RESET);
+                        erreurAlgorithme(ludophile, map, but);
+                    } else {
+                        avancerSud(ludophile, map);
+                        delay(500);
+                    }
                 }
+            } else {
+                kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
             }
-        } else {
-            kaomijiOrateurln(JAUNE + "Tu ne t'es pas déplacé. Assure-toi d'appuyer sur le bon bouton pour te déplacer !" + RESET);
         }
     }
 

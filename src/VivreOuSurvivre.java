@@ -30,7 +30,7 @@ class VivreOuSurvivre extends Program{
     int nbViePrecedent = 10;
 
     //Nb de Reussite (>5 = Apparition du Troll)
-    int nbReussite = 0;
+    int nbReussite = 10;
 
     //Coordonné pour effet des éléments de la map
     int[] idxBombe = new int[]{-1,-1,-1,-1};
@@ -215,7 +215,16 @@ class VivreOuSurvivre extends Program{
     //Initialisera la carte
     void initialisationMap(String[][] map, Joueur ludophile, Objectif but){
         String[] element = new String[]{ARBRE, MONTAGNE, BOMBE, LAVE, CARTE};
-        double probabilite = 0.3;
+        double probabilite;
+
+        //Pour augmenter la difficulté et forcer le joueur à faire des sacrifices 😈    
+        if(nbReussite > 3 && nbReussite <= 5){
+            probabilite = 0.5;
+        } else if(nbReussite>5){
+            probabilite = 0.7;
+        } else {
+            probabilite = 0.3;
+        }
 
         remplissageMap(map);
 
@@ -1501,7 +1510,9 @@ class VivreOuSurvivre extends Program{
         delay(500);
         println(espacement(maitreKaomiji(nbVie)) + " • Immunité : L'immunité contre les malus n'est pas stackable.");
         delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Pertes de PV : Lorsque le joueur perd des PV, Kaomiji s’énerve. Si les PV du joueur atteignent 0, Kaomiji abattra le joueur.\n");
+        println(espacement(maitreKaomiji(nbVie)) + " • Pertes de PV : Lorsque le joueur perd des PV, Kaomiji s’énerve. Si les PV du joueur atteignent 0, Kaomiji abattra le joueur.");
+        delay(500);
+        println(espacement(maitreKaomiji(nbVie)) + " • Difficulté/Challenge : La difficulté de la carte sera plus grande selon le nombre de réussites que vous obtenez.\n");
         delay(500);
         kaomijiOrateur(GRAS + "Quand tu seras prêt et que tu auras bien lu les règles, appuie sur [ENTER] pour commencer à jouer." + RESET);
         confirmateur = readString();

@@ -1008,7 +1008,7 @@ class VivreOuSurvivre extends Program{
         double probabilite = random();
 
         //Si l'arbre se trouve au-dessus OU en-dessous du joueur
-        if((idxArbre[0] != -1 && idxArbre[1] != -1) && equals(map[idxArbre[0]][idxArbre[1]], ludophile.personnage) && probabilite>0.5){
+        if((idxArbre[0] != -1 && idxArbre[1] != -1) && equals(map[idxArbre[0]][idxArbre[1]], ludophile.personnage) && probabilite<0.3){
             delay(500);
             map[idxArbre[0]][idxArbre[1]] = COCO;
             
@@ -1040,7 +1040,7 @@ class VivreOuSurvivre extends Program{
         }
 
         //Si l'arbre se trouve à droite OU à gauche du joueur
-        if((idxArbre[2] != -1 && idxArbre[3] != -1) && equals(map[idxArbre[2]][idxArbre[3]], ludophile.personnage) && probabilite>0.5){
+        if((idxArbre[2] != -1 && idxArbre[3] != -1) && equals(map[idxArbre[2]][idxArbre[3]], ludophile.personnage) && probabilite<0.3){
             delay(500);
             map[idxArbre[2]][idxArbre[3]] = COCO;
             
@@ -1500,7 +1500,7 @@ class VivreOuSurvivre extends Program{
         delay(500);
         println(espacement(maitreKaomiji(nbVie)) + " • Lave : Si le joueur touche la lave, il perd 5 de ses PV.");
         delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Arbre : Si le joueur essaie de traverser un arbre, il a 50 % de chances de se prendre des noix de coco");
+        println(espacement(maitreKaomiji(nbVie)) + " • Arbre : Si le joueur essaie de traverser un arbre, il a 30 % de chances de se prendre des noix de coco");
         delay(500);
         println(espacement(maitreKaomiji(nbVie)) + " • Montagne : Le joueur ne peut pas traverser la montagne : " + MONTAGNE);
         delay(500);

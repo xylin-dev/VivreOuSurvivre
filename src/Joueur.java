@@ -6,6 +6,7 @@ class Joueur{
     boolean tutoriel;
     int nbBouclier;
     boolean immunite;
+    int nbReussite;
     
     int idxL;
     int idxC;

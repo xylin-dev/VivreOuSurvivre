@@ -1,5 +1,5 @@
 class Objectif{
     final String DRAPEAU = "🚩";
-    int idxObjectifLigne;
-    int idxObjectifColonne;
+    int idxL;
+    int idxC;
 }

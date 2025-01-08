@@ -1,3 +1,0 @@
-class Bloc{
-    int[] algorithm;
-}

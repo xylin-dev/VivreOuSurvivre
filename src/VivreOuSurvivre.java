@@ -39,14 +39,12 @@ class VivreOuSurvivre extends Program{
     void algorithm(){
         Joueur ludophile = newJoueur();
         Objectif but = newObjectif();
-        String[][] map;
+        String[][] map = new String[20][20];
 
         begin(ludophile, but);
         
         //Faire une condition en fonction
-        ludophile.nbReussite = 1;
         while(nbVie>0){
-            map = tailleMap(ludophile);
             initialisationMap(map, ludophile, but);
             afficherMap(map, ludophile);
             println();
@@ -180,14 +178,6 @@ class VivreOuSurvivre extends Program{
     /* Création, initialisation et affichage de la map */
     /* =============================================== */
 
-    //Taille de la map
-    String[][] tailleMap(Joueur ludophile){
-        if(ludophile.nbReussite < 2){
-            return new String[10][10];
-        }
-        return new String[20][20];
-    }
-
     //Remplisaage de la map avec des CHEMIN
     void remplissageMap(String[][] map){
         for(int idxI=0; idxI<length(map,1); idxI++){
@@ -258,16 +248,30 @@ class VivreOuSurvivre extends Program{
         println();
         for(int idxI=0; idxI<length(map,1); idxI++){
             for(int idxJ=0; idxJ<length(map,2); idxJ++){
-                print(map[idxI][idxJ]);
+                print(map[idxI][idxJ]);  
             }
+            elementExplication(ludophile, idxI);
             println();
         } 
         informationJoueur(ludophile, map);
         println();
     }
 
-    //Affichera la description de chaque effet des éléments (si elle apparait dans la map)
+    //Affichera la description de chaque effet des éléments + info
+    void elementExplication(Joueur ludophile, int idxL){
+        final String rules = "ressources/File/rules.txt";
+        String line;
+        File explication = newFile(rules);
+        int idx = -1;
 
+        while(idx<idxL && ready(explication) && ludophile.tutoriel == false){
+            line = readLine(explication);
+            idx++;
+            if(idx == idxL){
+                print(espacement("□□□□□") + line);
+            }
+        }
+    }
 
 
     /* =============================================================================== */
@@ -1391,16 +1395,15 @@ class VivreOuSurvivre extends Program{
     /* ===================================================== */
     void begin(Joueur ludophile, Objectif but){
         final String ASCII = "ressources/File/VivreOuSurvivre.txt";
-        asciiArt(ASCII);
+        lecteurFichier(ASCII);
         creationPersonnage(ludophile);
         tutoriel(ludophile, but);
-        //reglement(ludophile, but);
     }
 
-    void asciiArt(String chemin){
-        File ascii = newFile(chemin);
-		while(ready(ascii)){
-			println(readLine(ascii));
+    void lecteurFichier(String chemin){
+        File fichier = newFile(chemin);
+		while(ready(fichier)){
+			println(readLine(fichier));
 		}
         delay(1000);
     }
@@ -1472,46 +1475,6 @@ class VivreOuSurvivre extends Program{
         ludophile.tutoriel = false;
         println();
     }
-
-    //Règlement
-    /*void reglement(Joueur ludophile, Objectif but){
-        String confirmateur;
-        kaomijiOrateurln("Avant de commencer à jouer, je veux vous rappeler les règles.\n");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Drapeau : Le joueur doit atteindre le drapeau " + but.DRAPEAU + " en utilisant un algorithme grâce à un ensemble d'outils mis à sa disposition.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Prévention : Si le drapeau n'est pas atteint à la fin de l'algorithme, ou si l'algorithme a une erreur, le joueur devra recommencer depuis le début de la carte.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Obstacles : Les bombes explosées ou d'autres éléments de la carte ne reviendront pas si vous recommencez.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Point de Vie (PV) : Le joueur commence avec 10 PV, représentés par un cœur : ❤️");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Déplacement : Le joueur peut se déplacer librement sur les chemins comme bon lui semble et représentés par : ⬛");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Bombe : Si le joueur touche une bombe, il perd 1 PV.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Lave : Si le joueur touche la lave, il perd 5 de ses PV.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Arbre : Si le joueur essaie de traverser un arbre, il a 30 % de chances de se prendre des noix de coco");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Montagne : Le joueur ne peut pas traverser la montagne : " + MONTAGNE);
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Cartes événements : Des cartes événements peuvent donner des " + VERT + "bonus (PV, Bouclier, etc.) " + RESET + "ou des " + ROUGE + "malus (Astéroïde, Tornade) " + RESET + "au joueur.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Bouclier : Le bouclier protège le joueur contre certains dégâts, agissant comme un deuxième PV (max. 5)");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Immunité : L'immunité contre les malus n'est pas stackable.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Pertes de PV : Lorsque le joueur perd des PV, Kaomiji s’énerve. Si les PV du joueur atteignent 0, Kaomiji abattra le joueur.");
-        delay(500);
-        println(espacement(maitreKaomiji(nbVie)) + " • Difficulté/Challenge : La difficulté de la carte sera plus grande selon le nombre de réussites que vous obtenez.\n");
-        delay(500);
-        kaomijiOrateur(GRAS + "Quand tu seras prêt et que tu auras bien lu les règles, appuie sur [ENTER] pour commencer à jouer." + RESET);
-        confirmateur = readString();
-        delay(500);
-    }*/
-
-
 
 
 
@@ -2068,6 +2031,4 @@ class VivreOuSurvivre extends Program{
             executionAlgorithme(ludophile, map, but);
         }
     }
-
-    //Note: à faire scénario, alternative, troll
 }

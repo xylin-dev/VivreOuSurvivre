@@ -1,0 +1,18 @@
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 🌟 Information sur les éléments de la carte 🌟
+╟───────────────────────────────────────────────────────────────────────────────────────────────╢
+║
+║ 🚩 : Atteindre le drapeau pour gagner la partie.
+║ ⬛ : Le joueur peut se déplacer sans restriction sur ces cases.
+║ 🗻 : Déplacement impossible sur ces cases.
+║ 💣 : En le traversant, le joueur perd 1 PV à cause de 💥.
+║ 🌋 : En le traversant, le joueur perd 5 PV à cause de 🔥.
+║ 🌴 : En traversant, le joueur a 30 % de chances de perdre 1 PV à cause de 🥥.
+║ 🎴 : Donne un bonus (PV, bouclier, etc.) ou un malus (ex. : tornade, astéroïde).
+║ ❤️ : Les Points de Vies (PV) du joueur (max. 10 PV).
+║ 🛡️ : Protège contre les dégâts, chaque bouclier absorbe 1 dégât (max. 5 boucliers).
+║ 💊 : Protège contre les malus, mais n’est pas cumulable.
+║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════╝

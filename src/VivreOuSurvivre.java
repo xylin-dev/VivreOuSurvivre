@@ -1,3 +1,6 @@
+import extensions.File;
+import extensions.CSVFile;
+
 class VivreOuSurvivre extends Program{
     
     /* ============================== */
@@ -33,16 +36,17 @@ class VivreOuSurvivre extends Program{
     int[] idxCarte = new int[]{-1,-1,-1,-1};
 
 
-    void _algorithm(){
+    void algorithm(){
         Joueur ludophile = newJoueur();
         Objectif but = newObjectif();
-
-        String[][] map = new String[20][20];
+        String[][] map;
 
         begin(ludophile, but);
-
+        
         //Faire une condition en fonction
+        ludophile.nbReussite = 1;
         while(nbVie>0){
+            map = tailleMap(ludophile);
             initialisationMap(map, ludophile, but);
             afficherMap(map, ludophile);
             println();
@@ -175,6 +179,14 @@ class VivreOuSurvivre extends Program{
     /* =============================================== */
     /* Création, initialisation et affichage de la map */
     /* =============================================== */
+
+    //Taille de la map
+    String[][] tailleMap(Joueur ludophile){
+        if(ludophile.nbReussite < 2){
+            return new String[10][10];
+        }
+        return new String[20][20];
+    }
 
     //Remplisaage de la map avec des CHEMIN
     void remplissageMap(String[][] map){
@@ -698,6 +710,37 @@ class VivreOuSurvivre extends Program{
     /* ================================================================== */
     /* Tout ce qui est relatif à la création et information du personnage */
     /* ================================================================== */
+
+    //Donnera le nom "Nameless" si le joueur ne rentre pas de caractère dans son nom
+    String verificationNom(String nom){
+        int idx = 0;
+
+        while(idx<length(nom) && charAt(nom, idx) == ' '){
+            idx++;
+        }
+
+        if(idx<length(nom)){
+            return substring(nom, idx, length(nom));
+        } 
+
+        return "Nameless";
+    }
+
+    void testVerificationNom(){
+        String nom;
+
+        nom = "";
+        assertEquals("Nameless", verificationNom(nom));
+
+        nom = "      ";
+        assertEquals("Nameless", verificationNom(nom));
+
+        nom = "Tagada";
+        assertEquals("Tagada", verificationNom(nom));
+
+        nom = "      Toto";
+        assertEquals("Toto", verificationNom(nom));
+    }
 
     //Genre du Joueur
     String genreJoueur(Joueur ludophile){
@@ -1347,46 +1390,19 @@ class VivreOuSurvivre extends Program{
     /* Tout ce qui concerne begin() lors du lancement du jeu */
     /* ===================================================== */
     void begin(Joueur ludophile, Objectif but){
+        final String ASCII = "ressources/File/VivreOuSurvivre.txt";
+        asciiArt(ASCII);
         creationPersonnage(ludophile);
         tutoriel(ludophile, but);
         //reglement(ludophile, but);
     }
 
-    //Donnera le nom "Nameless" si le joueur ne rentre pas de caractère dans son nom
-    String nameless(String nom){
-        int idx = 0;
-        int debut = 0;
-
-        if(equals(nom, "")){
-            return "Nameless";
-        }
-
-        while(idx<length(nom) && charAt(nom, idx) == ' '){
-            idx++;
-        }
-
-        if(idx<length(nom)){
-            debut = idx;
-            return substring(nom, debut, length(nom));
-        } 
-
-        return "Nameless";
-    }
-
-    void testNameless(){
-        String nom;
-
-        nom = "";
-        assertEquals("Nameless", nameless(nom));
-
-        nom = "      ";
-        assertEquals("Nameless", nameless(nom));
-
-        nom = "Tagada";
-        assertEquals("Tagada", nameless(nom));
-
-        nom = "      Toto";
-        assertEquals("Toto", nameless(nom));
+    void asciiArt(String chemin){
+        File ascii = newFile(chemin);
+		while(ready(ascii)){
+			println(readLine(ascii));
+		}
+        delay(1000);
     }
 
     //Introduction et création du personnage lors du démarrage du jeu
@@ -1394,7 +1410,7 @@ class VivreOuSurvivre extends Program{
         String choix;
         kaomijiOrateurln("Bienvenue dans VivreOuSurvivre ! Dans ce jeu, tu vas apprendre les bases des algorithmes en t'amusant.");
         kaomijiOrateur("Je me présente, je suis le maître du jeu : Kaomiji, ton super compagnon ! Et toi, qui es-tu ? ");
-        ludophile.nom = nameless(readString());
+        ludophile.nom = verificationNom(readString());
         delay(1000);
         kaomijiOrateurln(ludophile.nom + "? Super ton nom ! Avant de commencer à t'apprendre les bases des algorithmes, il faut d'abord créer ton personnage.");
         genreJoueur(ludophile);

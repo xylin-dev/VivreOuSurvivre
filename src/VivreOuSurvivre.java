@@ -51,7 +51,7 @@ class VivreOuSurvivre extends Program{
             while(objectifPasAtteint(ludophile, map, but) && nbVie>0){
                 executionAlgorithme(ludophile, map, but);
             }
-            //Faire condition pour continuer ou arrêter / scénario
+            //Faire condition pour continuer ou arrêter / scénario + saveData
             /*if(nbVie>0){
                 nbReussite++;
                 kaomijiOrateurln(VERT + "Félicitations ! Ton nombre de réussites a augmenté : " + nbReussite + RESET);
@@ -1397,6 +1397,7 @@ class VivreOuSurvivre extends Program{
         final String ASCII = "ressources/File/VivreOuSurvivre.txt";
         lecteurFichier(ASCII);
         creationPersonnage(ludophile);
+        saveData(ludophile, "ressources/CSVFile/data.csv");
         tutoriel(ludophile, but);
     }
 
@@ -2030,5 +2031,44 @@ class VivreOuSurvivre extends Program{
             println();
             executionAlgorithme(ludophile, map, but);
         }
+    }
+
+
+
+    /* ==================================================== */
+    /* Erreur lors de l'éxécution de l'algorithme du joueur */
+    /* ==================================================== */
+
+    //Récupération des données des joueur déjà existant
+    String[][] data(String fileCSV){
+        CSVFile dataLudophile = loadCSV(fileCSV);
+        String[][] dataCSV = new String[rowCount(dataLudophile)+1][columnCount(dataLudophile)];
+
+        for(int idxI=0; idxI<length(dataCSV, 1)-1; idxI++){
+            for(int idxJ=0; idxJ<length(dataCSV, 2); idxJ++){
+                dataCSV[idxI][idxJ] = getCell(dataLudophile, idxI, idxJ);
+            }
+        }
+
+        return dataCSV;
+    }
+
+    //Enregistrement de donnée ou modification
+    void saveData(Joueur ludophile, String fileCSV){
+        String[][] data = data(fileCSV);
+        int id = stringtoInt(data[length(data,1)-2][0]);
+
+        for(int idx=length(data, 1)-1; idx<length(data, 1); idx++){
+            data[idx][(length(data, 2) - length(data, 2))] = "" + (id + 1);
+            data[idx][(length(data, 2) - length(data, 2))+1] = " " + ludophile.nom;
+            data[idx][(length(data, 2) - length(data, 2))+2] = " " + ludophile.genre;
+            data[idx][(length(data, 2) - length(data, 2))+3] = " " + ludophile.tutoriel;
+            data[idx][(length(data, 2) - length(data, 2))+4] = " " + nbVie;
+            data[idx][(length(data, 2) - length(data, 2))+5] = " " + ludophile.nbReussite;
+            data[idx][(length(data, 2) - length(data, 2))+6] = " " + ludophile.nbBouclier;
+            data[idx][(length(data, 2) - length(data, 2))+7] = " " + ludophile.immunite;
+        }
+
+        saveCSV(data, fileCSV);
     }
 }

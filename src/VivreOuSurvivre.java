@@ -15,6 +15,9 @@ class VivreOuSurvivre extends Program{
     final String LAVE = "🌋";
     final String CARTE = "🎴";
 
+    //Chemin vers data.csv
+    final String csvData = "ressources/CSVFile/data.csv";
+
     //Couleurs du texte selon de leurs fonctions
     final String VERT = "\u001B[32m"; //Réussite, objectif atteint.
     final String ROUGE = "\u001B[31m"; //Échec, erreur.
@@ -71,7 +74,7 @@ class VivreOuSurvivre extends Program{
         Joueur ludophile = new Joueur();
         ludophile.nbBouclier = 0;
         ludophile.immunite = false;
-        ludophile.tutoriel = false;
+        ludophile.tutoriel = true;
         return ludophile;
     }
 
@@ -332,6 +335,16 @@ class VivreOuSurvivre extends Program{
         assertEquals(3, verificationString("3"));
         assertEquals(15, verificationString("15"));
         assertEquals(100, verificationString("100"));
+    }
+
+    boolean stringToBoolean(String booleen){
+        return equals(booleen, "true");
+    }
+
+    void testStringToBoolean(){
+        assertTrue(stringToBoolean("true"));
+        assertFalse(stringToBoolean("false"));
+        assertFalse(stringToBoolean("chocolat"));
     }
 
 
@@ -744,6 +757,26 @@ class VivreOuSurvivre extends Program{
 
         nom = "      Toto";
         assertEquals("Toto", verificationNom(nom));
+    }
+
+    //Confirmation de jouer en tant que Nameless
+    void estNameless(Joueur ludophile){
+        String saisie;
+        if(equals(ludophile.nom, "Nameless")){
+            kaomijiOrateur("Pour l’instant, ton nom (" + ludophile.nom + ") ne te permettra pas de récupérer tes données si besoin. Veux-tu le changer ? ");
+            saisie = toUpperCase(readString());
+
+            while((!equals(saisie, "O") && !equals(saisie, "OUI")) && (!equals(saisie, "N") && !equals(saisie, "NON"))){
+                kaomijiOrateur(JAUNE + "Vérifie ce que tu as écrit : tu dois choisir entre Oui (O) ou Non (N) : " + RESET);
+                saisie = toUpperCase(readString());
+            }
+
+            if(equals(saisie, "O") || equals(saisie, "OUI")){
+                kaomijiOrateur("Écris un nom différent de 'Nameless' : ");
+                ludophile.nom = readString();
+            }
+            delay(1000);
+        }
     }
 
     //Genre du Joueur
@@ -1397,8 +1430,9 @@ class VivreOuSurvivre extends Program{
         final String ASCII = "ressources/File/VivreOuSurvivre.txt";
         lecteurFichier(ASCII);
         creationPersonnage(ludophile);
-        saveData(ludophile, "ressources/CSVFile/data.csv");
-        tutoriel(ludophile, but);
+        if(ludophile.tutoriel == true){
+            tutoriel(ludophile, but);
+        }
     }
 
     void lecteurFichier(String chemin){
@@ -1409,19 +1443,31 @@ class VivreOuSurvivre extends Program{
         delay(1000);
     }
 
-    //Introduction et création du personnage lors du démarrage du jeu
+    //Création du personnage du joueur
     void creationPersonnage(Joueur ludophile){
-        String choix;
         kaomijiOrateurln("Bienvenue dans VivreOuSurvivre ! Dans ce jeu, tu vas apprendre les bases des algorithmes en t'amusant.");
         kaomijiOrateur("Je me présente, je suis le maître du jeu : Kaomiji, ton super compagnon ! Et toi, qui es-tu ? ");
         ludophile.nom = verificationNom(readString());
         delay(1000);
-        kaomijiOrateurln(ludophile.nom + "? Super ton nom ! Avant de commencer à t'apprendre les bases des algorithmes, il faut d'abord créer ton personnage.");
-        genreJoueur(ludophile);
-        delay(1000);
+        estNameless(ludophile);
+        if(!equals(ludophile.nom, "Nameless")){
+            if(length(data(csvData))>3 && estNomExistant(ludophile, csvData)){
+                restoreLudophile(ludophile, csvData);
+            } else {
+                kaomijiOrateur("Afin de pouvoir revenir là où tu t'es arrêté, je te demande d'entrer un mot que seul toi tu connais : ");
+                ludophile.mdp = readString();
+                delay(1000);
+                genreJoueur(ludophile);
+                kaomijiOrateurln(JAUNE + "Enregistrement de tes données en cours..." + RESET);
+                saveData(ludophile, csvData);
+                kaomijiOrateurln(VERT + "Enregistrement terminé !" + RESET);
+            }
+        } else {
+            genreJoueur(ludophile);
+        }
+        kaomijiOrateurln("Avant de commencer/continuer à t'apprendre les bases des algorithmes, il faut d'abord créer ton personnage.");
         personnageJoueur(ludophile);
-        delay(1000);
-        println();
+        delayln(1000);
         recaputilatif(ludophile);
         delay(1000);
     }
@@ -1436,7 +1482,6 @@ class VivreOuSurvivre extends Program{
     void tutoriel(Joueur ludophile, Objectif but){
         String choix;
         String[][] map = new String[5][5];
-        ludophile.tutoriel = true;
 
         delayln(1000);
         kaomijiOrateurln("Ce que tu dois savoir ET retenir, " + BLEU + "c'est que les ordinateurs font exactement TOUT ce qu'on leur dit" + RESET + ", sans poser de questions.");
@@ -2035,9 +2080,9 @@ class VivreOuSurvivre extends Program{
 
 
 
-    /* ==================================================== */
-    /* Erreur lors de l'éxécution de l'algorithme du joueur */
-    /* ==================================================== */
+    /* ============================================ */
+    /* Tout ce qui est relatif au données du joueur */
+    /* ============================================ */
 
     //Récupération des données des joueur déjà existant
     String[][] data(String fileCSV){
@@ -2056,19 +2101,179 @@ class VivreOuSurvivre extends Program{
     //Enregistrement de donnée ou modification
     void saveData(Joueur ludophile, String fileCSV){
         String[][] data = data(fileCSV);
-        int id = stringtoInt(data[length(data,1)-2][0]);
+        ludophile.id = stringtoInt(data[length(data,1)-2][0]);
 
         for(int idx=length(data, 1)-1; idx<length(data, 1); idx++){
-            data[idx][(length(data, 2) - length(data, 2))] = "" + (id + 1);
-            data[idx][(length(data, 2) - length(data, 2))+1] = " " + ludophile.nom;
-            data[idx][(length(data, 2) - length(data, 2))+2] = " " + ludophile.genre;
-            data[idx][(length(data, 2) - length(data, 2))+3] = " " + ludophile.tutoriel;
-            data[idx][(length(data, 2) - length(data, 2))+4] = " " + nbVie;
-            data[idx][(length(data, 2) - length(data, 2))+5] = " " + ludophile.nbReussite;
-            data[idx][(length(data, 2) - length(data, 2))+6] = " " + ludophile.nbBouclier;
-            data[idx][(length(data, 2) - length(data, 2))+7] = " " + ludophile.immunite;
+            data[idx][(length(data, 2) - length(data, 2))+0] = "" + (ludophile.id + 1);
+            data[idx][(length(data, 2) - length(data, 2))+1] = ludophile.nom;
+            data[idx][(length(data, 2) - length(data, 2))+2] = ludophile.genre;
+            data[idx][(length(data, 2) - length(data, 2))+3] = "" + ludophile.tutoriel;
+            data[idx][(length(data, 2) - length(data, 2))+4] = "" + nbVie;
+            data[idx][(length(data, 2) - length(data, 2))+5] = "" + ludophile.nbReussite;
+            data[idx][(length(data, 2) - length(data, 2))+6] = "" + ludophile.nbBouclier;
+            data[idx][(length(data, 2) - length(data, 2))+7] = "" + ludophile.immunite;
+            data[idx][(length(data, 2) - length(data, 2))+8] = ludophile.mdp;
         }
 
         saveCSV(data, fileCSV);
+    }
+
+    //Retournera un tableau avec les noms de tous les joueurs
+    String[] nomLudophile(String fileCSV){
+        String[][] data = data(fileCSV);
+        String[] nom = new String[length(data, 1)-3];
+
+        for(int idx=0; idx<length(nom); idx++){
+            nom[idx] = data[idx+2][1];
+        }
+
+        return nom;
+    }
+
+    //Retournera un tableau avec les mdp de tous les joueurs
+    String[] mdpLudophile(String fileCSV){
+        String[][] data = data(fileCSV);
+        String[] mdp = new String[length(data, 1)-3];
+
+        for(int idx=0; idx<length(mdp); idx++){
+            mdp[idx] = data[idx+2][8];
+        }
+
+        return mdp;
+    }
+
+    //Restauration des données
+    void restoreData(Joueur ludophile, String fileCSV, int idx){
+        String[][] data = data(fileCSV);
+        ludophile.id = stringtoInt(data[idx+2][0]);
+        ludophile.nom = data[idx+2][1];
+        ludophile.genre = data[idx+2][2];
+        ludophile.tutoriel = stringToBoolean(data[idx+2][3]);
+        nbVie = stringtoInt(data[idx+2][4]);
+        ludophile.nbReussite = stringtoInt(data[idx+2][5]);
+        ludophile.nbBouclier = stringtoInt(data[idx+2][6]);
+        ludophile.immunite = stringToBoolean(data[idx+2][7]);
+    }
+
+    //Si le joueur est existant et connais son mdp, il récupère ses données
+    void restoreLudophile(Joueur ludophile, String fileCSV){
+        String[] nom = nomLudophile(fileCSV);
+        String[] mdp = mdpLudophile(fileCSV);
+        String choix;
+        int idx = 0;
+
+        while(idx<length(nom) && !equals(nom[idx], ludophile.nom)){
+            idx++;
+        }
+
+        if(equals(nom[idx], ludophile.nom)){
+            kaomijiOrateur(VERT + "Ding Dong ! On a trouvé ton nom dans nos données, c’est bien toi ? [O : Oui ; N : Non] : " + RESET);
+            choix = toUpperCase(readString());
+            while((!equals(choix, "O") && !equals(choix, "OUI")) && (!equals(choix, "N") && !equals(choix, "NON"))){
+                kaomijiOrateur(JAUNE + "Vérifie ce que tu as écrit : tu dois choisir entre Oui (O) ou Non (N) : " + RESET);
+                choix = toUpperCase(readString());
+            }
+
+            if(equals(choix, "O") || equals(choix, "OUI")){
+                kaomijiOrateur("Entrez votre mot secret : ");
+                choix = readString();
+                while(!equals(choix, mdp[idx]) && !equals(choix, "0")){
+                    kaomijiOrateur(JAUNE + "Mot secret incorrect, essaie encore ou appuie sur [0] pour annuler : " + RESET);
+                    choix = readString();
+                }
+            } else {
+                ludophileSetUp(ludophile, fileCSV);
+            }
+
+            if(equals(choix, mdp[idx])){
+                kaomijiOrateurln(VERT + "Restauration de vos données en cours..." + RESET);
+                restoreData(ludophile, fileCSV, idx);
+                kaomijiOrateurln(VERT + "Données restaurées, re-bonjour " + ludophile.nom + RESET);
+            } else if(equals(choix, "0") ){
+                ludophileSetUp(ludophile, fileCSV);
+            }
+        }
+    }
+
+    //Création personnage si la saisie était un personnage existant
+    void ludophileSetUp(Joueur ludophile, String fileCSV){
+        ludophile.nom = nomUnique(ludophile, fileCSV);
+        estNameless(ludophile);
+        delay(1000);
+        genreJoueur(ludophile);
+        if(!equals(ludophile.nom, "Nameless")){
+            kaomijiOrateur("Afin de pouvoir revenir là où tu t'es arrêté, je te demande d'entrer un mot que seul toi tu connais : ");
+            ludophile.mdp = readString();
+            kaomijiOrateurln(JAUNE + "Enregistrement de tes données en cours..." + RESET);
+            saveData(ludophile, fileCSV);
+            kaomijiOrateurln(VERT + "Enregistrement terminé !" + RESET);
+        }
+    }
+
+    //Afin de modifier les données du joueur
+    void adjustLudophile(Joueur ludophile, String fileCSV){
+        String[][] data = data(fileCSV);
+
+        for(int idx=0; idx<length(data); idx++){
+            data[ludophile.id+2][idx] = "" + ludophile.nom;
+            data[ludophile.id+2][idx] = "" + ludophile.genre;
+            data[ludophile.id+2][idx] = "" + ludophile.tutoriel;
+            data[ludophile.id+2][idx] = "" + nbVie;
+            data[ludophile.id+2][idx] = "" + ludophile.nbReussite;
+            data[ludophile.id+2][idx] = "" + ludophile.nbBouclier;
+            data[ludophile.id+2][idx] = "" + ludophile.immunite;
+        }
+
+        saveCSV(data, fileCSV);
+    }
+
+    //Eviter les doublons de noms
+    String nomUnique(Joueur ludophile, String fileCSV){
+        String[] nom = nomLudophile(fileCSV);
+        int idx = 0;
+        String saisie;
+        
+        kaomijiOrateur("Entrez un nouveau nom : ");
+        saisie = verificationNom(readString());
+        while(idx<length(nom) && !equals(nom[idx], saisie)){
+            idx++;
+        }
+
+        while(idx<length(nom) && equals(nom[idx], saisie)){
+            idx = 0;
+            kaomijiOrateur(JAUNE + "Ce nom existe déjà, choisis-en un autre : " + RESET);
+            saisie = verificationNom(readString());
+            while(idx<length(nom) && !equals(nom[idx], saisie)){
+                idx++;
+            }
+        }
+
+        return saisie;
+    }
+
+    //Retournera vrai si le nom saisie existe déjà
+    boolean estNomExistant(Joueur ludophile, String fileCSV){
+        String[] nom = nomLudophile(fileCSV);
+        int idx = 0;
+
+        while(idx<length(nom) && !equals(nom[idx], ludophile.nom)){
+            idx++;
+        }
+
+        if(idx == length(nom)){
+            return false;
+        }
+
+        return equals(nom[idx], ludophile.nom);
+    }
+
+    void testEstNomExistant(){
+        Joueur ludophile = newJoueur();
+
+        ludophile.nom = "Xylin";
+        assertTrue(estNomExistant(ludophile, csvData));
+
+        ludophile.nom = "ABCDEFG";
+        assertFalse(estNomExistant(ludophile, csvData));
     }
 }

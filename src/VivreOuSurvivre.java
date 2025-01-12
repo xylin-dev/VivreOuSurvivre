@@ -1483,15 +1483,15 @@ class VivreOuSurvivre extends Program{
         String choix;
         String[][] map = new String[5][5];
 
-        delayln(1000);
+        /*delayln(1000);
         kaomijiOrateurln("Ce que tu dois savoir ET retenir, " + BLEU + "c'est que les ordinateurs font exactement TOUT ce qu'on leur dit" + RESET + ", sans poser de questions.");
         kaomijiOrateurln("Pour ce tutoriel, je te conseille" + BLEU + " d'utiliser le pavé numérique " + RESET + "pour entrer les valeurs des déplacements qui lui correspondent.");
         kaomijiOrateurln(JAUNE + "PS: Tu ne gagnes pas de points de réussite. ;^;\n" + RESET);
         kaomijiOrateur("Appuie sur [ENTER] pour commencer le tutoriel !");
-        choix = readString();
+        choix = readString();*/
         delayln(1000);
         avancerTutoriel(ludophile, but, map);
-        delayln(1000);
+        /*delayln(1000);
         droiteTutoriel(ludophile, but, map);
         delayln(1000);
         gaucheTutoriel(ludophile, but, map);
@@ -1516,10 +1516,14 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateurln(GRAS + BLEU + "Pour rappel, un algorithme est une suite d'instructions à suivre dans un ordre précis pour atteindre ton objectif." + RESET);
         kaomijiOrateurln("Grâce à ces outils, tu peux maintenant créer des algorithmes pour résoudre différents problèmes ou accomplir des tâches de manière logique et organisée.\n");
         kaomijiOrateur(GRAS + "Si tu es prêt à commencer réellement le jeu, appuie sur la touche [ENTER] de ton clavier !" + RESET);
-        choix = readString();
+        choix = readString();*/
         
         ludophile.tutoriel = false;
         println();
+
+        kaomijiOrateurln(JAUNE + "Sauvegarde de ta progression en cours..." + RESET);
+        adjustLudophile(ludophile, csvData);
+        kaomijiOrateurln(VERT + "Sauvegarde Terminée !" + RESET);
     }
 
 
@@ -2103,17 +2107,15 @@ class VivreOuSurvivre extends Program{
         String[][] data = data(fileCSV);
         ludophile.id = stringtoInt(data[length(data,1)-2][0]);
 
-        for(int idx=length(data, 1)-1; idx<length(data, 1); idx++){
-            data[idx][(length(data, 2) - length(data, 2))+0] = "" + (ludophile.id + 1);
-            data[idx][(length(data, 2) - length(data, 2))+1] = ludophile.nom;
-            data[idx][(length(data, 2) - length(data, 2))+2] = ludophile.genre;
-            data[idx][(length(data, 2) - length(data, 2))+3] = "" + ludophile.tutoriel;
-            data[idx][(length(data, 2) - length(data, 2))+4] = "" + nbVie;
-            data[idx][(length(data, 2) - length(data, 2))+5] = "" + ludophile.nbReussite;
-            data[idx][(length(data, 2) - length(data, 2))+6] = "" + ludophile.nbBouclier;
-            data[idx][(length(data, 2) - length(data, 2))+7] = "" + ludophile.immunite;
-            data[idx][(length(data, 2) - length(data, 2))+8] = ludophile.mdp;
-        }
+        data[length(data)-1][0] = "" + (ludophile.id + 1);
+        data[length(data)-1][1] = ludophile.nom;
+        data[length(data)-1][2] = ludophile.genre;
+        data[length(data)-1][3] = "" + ludophile.tutoriel;
+        data[length(data)-1][4] = "" + nbVie;
+        data[length(data)-1][5] = "" + ludophile.nbReussite;
+        data[length(data)-1][6] = "" + ludophile.nbBouclier;
+        data[length(data)-1][7] = "" + ludophile.immunite;
+        data[length(data)-1][8] = ludophile.mdp;
 
         saveCSV(data, fileCSV);
     }
@@ -2121,10 +2123,10 @@ class VivreOuSurvivre extends Program{
     //Retournera un tableau avec les noms de tous les joueurs
     String[] nomLudophile(String fileCSV){
         String[][] data = data(fileCSV);
-        String[] nom = new String[length(data, 1)-3];
+        String[] nom = new String[length(data, 1)-2];
 
         for(int idx=0; idx<length(nom); idx++){
-            nom[idx] = data[idx+2][1];
+            nom[idx] = data[idx+1][1];
         }
 
         return nom;
@@ -2133,10 +2135,10 @@ class VivreOuSurvivre extends Program{
     //Retournera un tableau avec les mdp de tous les joueurs
     String[] mdpLudophile(String fileCSV){
         String[][] data = data(fileCSV);
-        String[] mdp = new String[length(data, 1)-3];
+        String[] mdp = new String[length(data, 1)-2];
 
         for(int idx=0; idx<length(mdp); idx++){
-            mdp[idx] = data[idx+2][8];
+            mdp[idx] = data[idx+1][8];
         }
 
         return mdp;
@@ -2145,14 +2147,14 @@ class VivreOuSurvivre extends Program{
     //Restauration des données
     void restoreData(Joueur ludophile, String fileCSV, int idx){
         String[][] data = data(fileCSV);
-        ludophile.id = stringtoInt(data[idx+2][0]);
-        ludophile.nom = data[idx+2][1];
-        ludophile.genre = data[idx+2][2];
-        ludophile.tutoriel = stringToBoolean(data[idx+2][3]);
-        nbVie = stringtoInt(data[idx+2][4]);
-        ludophile.nbReussite = stringtoInt(data[idx+2][5]);
-        ludophile.nbBouclier = stringtoInt(data[idx+2][6]);
-        ludophile.immunite = stringToBoolean(data[idx+2][7]);
+        ludophile.id = stringtoInt(data[idx+1][0]);
+        ludophile.nom = data[idx+1][1];
+        ludophile.genre = data[idx+1][2];
+        ludophile.tutoriel = stringToBoolean(data[idx+1][3]);
+        nbVie = stringtoInt(data[idx+1][4]);
+        ludophile.nbReussite = stringtoInt(data[idx+1][5]);
+        ludophile.nbBouclier = stringtoInt(data[idx+1][6]);
+        ludophile.immunite = stringToBoolean(data[idx+1][7]);
     }
 
     //Si le joueur est existant et connais son mdp, il récupère ses données
@@ -2186,7 +2188,7 @@ class VivreOuSurvivre extends Program{
             }
 
             if(equals(choix, mdp[idx])){
-                kaomijiOrateurln(VERT + "Restauration de vos données en cours..." + RESET);
+                kaomijiOrateurln(JAUNE + "Restauration de vos données en cours..." + RESET);
                 restoreData(ludophile, fileCSV, idx);
                 kaomijiOrateurln(VERT + "Données restaurées, re-bonjour " + ludophile.nom + RESET);
             } else if(equals(choix, "0") ){
@@ -2213,18 +2215,23 @@ class VivreOuSurvivre extends Program{
     //Afin de modifier les données du joueur
     void adjustLudophile(Joueur ludophile, String fileCSV){
         String[][] data = data(fileCSV);
-
-        for(int idx=0; idx<length(data); idx++){
-            data[ludophile.id+2][idx] = "" + ludophile.nom;
-            data[ludophile.id+2][idx] = "" + ludophile.genre;
-            data[ludophile.id+2][idx] = "" + ludophile.tutoriel;
-            data[ludophile.id+2][idx] = "" + nbVie;
-            data[ludophile.id+2][idx] = "" + ludophile.nbReussite;
-            data[ludophile.id+2][idx] = "" + ludophile.nbBouclier;
-            data[ludophile.id+2][idx] = "" + ludophile.immunite;
+        String[][] adjustData = new String[length(data, 1)-1][length(data, 2)];
+        
+        for(int idxL=0; idxL<length(adjustData, 1); idxL++){
+            for(int idxC=0; idxC<length(adjustData, 2); idxC++){
+                adjustData[idxL][idxC] = data[idxL][idxC];
+            }
         }
 
-        saveCSV(data, fileCSV);
+        adjustData[ludophile.id+1][1] = ludophile.nom;
+        adjustData[ludophile.id+1][2] = ludophile.genre;
+        adjustData[ludophile.id+1][3] = "" + ludophile.tutoriel;
+        adjustData[ludophile.id+1][4] = "" + nbVie;
+        adjustData[ludophile.id+1][5] = "" + ludophile.nbReussite;
+        adjustData[ludophile.id+1][6] = "" + ludophile.nbBouclier;
+        adjustData[ludophile.id+1][7] = "" + ludophile.immunite;
+
+        saveCSV(adjustData, fileCSV);
     }
 
     //Eviter les doublons de noms

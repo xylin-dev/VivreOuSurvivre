@@ -107,6 +107,11 @@ class VivreOuSurvivre extends Program{
 
         return premierNb;
     }
+    
+    void testMin(){
+        assertEquals(1, min(2, 1));
+        assertEquals(3, min(3, 5));
+    }
 
     //Maitre du jeu : Kaomiji
     String maitreKaomiji(int nbChances){
@@ -120,6 +125,19 @@ class VivreOuSurvivre extends Program{
 
         return kaomiji[idx];
     }
+    
+    void testMaitreKaomiji(){
+        int nbLife;
+
+        nbLife = 10;
+        assertEquals("(˶•ᴗ•˶)", maitreKaomiji(nbLife));
+
+        nbLife = 9;
+        assertEquals("(˶˃ ᵕ ˂˶)", maitreKaomiji(nbLife));
+
+        nbLife = 8;
+        assertEquals("O_o", maitreKaomiji(nbLife));
+    }
 
     //e dans le texte (principalement pour Kaomiji)
     String espacement(String mot){
@@ -131,10 +149,19 @@ class VivreOuSurvivre extends Program{
 
         return espace;
     }
+    
+    void testEspacement(){
+        assertEquals("  ", espacement("aa"));
+        assertEquals("     ", espacement("bbbbb"));
+    }
 
     //Facilitera les moments où Kaomiji parle (au lieu d'utiliser print() ou println())
     String kaomijiPhrase(String mot){
         return maitreKaomiji(nbVie) + " - " + mot;
+    }
+    
+    void testKaomijiOrateur(){
+        assertEquals("(˶•ᴗ•˶) - Salut", kaomijiPhrase("Salut"));
     }
 
     //Affichera les paroles de Kaomiji
@@ -162,6 +189,7 @@ class VivreOuSurvivre extends Program{
             }
         }
     }
+    
 
     //Ajout aléatoire des élements dans la carte selon tab
     void elementMap(String[][] map, String[] tab, double probabilite, int idxL, int idxC){
@@ -265,6 +293,13 @@ class VivreOuSurvivre extends Program{
         }
         return true;
     }
+    
+    void testEstChiffre(){
+        assertTrue(estChiffre("500"));
+        assertTrue(estChiffre("1"));
+        assertFalse(estChiffre("1a"));
+        assertFalse(estChiffre("aa"));
+    }
 
     //Convertir la saisie String en Int
     int stringtoInt(String saisie){
@@ -276,6 +311,14 @@ class VivreOuSurvivre extends Program{
 
         return toInt;
     }
+    
+    void testStringToInt(){
+        assertEquals(0, stringtoInt("0"));
+        assertEquals(1, stringtoInt("1"));
+        assertEquals(3, stringtoInt("3"));
+        assertEquals(15, stringtoInt("15"));
+        assertEquals(100, stringtoInt("100"));
+    }
 
     //Tant que la saisie n'est pas correct, le joueur devra saisir à nouveau
     int verificationString(String saisie){
@@ -286,9 +329,23 @@ class VivreOuSurvivre extends Program{
         
         return stringtoInt(saisie);
     }
+    
+    void testVerificationString(){
+        assertEquals(0, verificationString("0"));
+        assertEquals(1, verificationString("1"));
+        assertEquals(3, verificationString("3"));
+        assertEquals(15, verificationString("15"));
+        assertEquals(100, verificationString("100"));
+    }
 
     boolean stringToBoolean(String booleen){
         return equals(booleen, "true");
+    }
+
+    void testStringToBoolean(){
+        assertTrue(stringToBoolean("true"));
+        assertFalse(stringToBoolean("false"));
+        assertFalse(stringToBoolean("chocolat"));
     }
 
 
@@ -302,19 +359,123 @@ class VivreOuSurvivre extends Program{
         return ludophile.idxL == 0 || equals(map[ludophile.idxL-1][ludophile.idxC], MONTAGNE);
     }
 
+    void testDeplacementImpossibleNord(){
+        Joueur ludophile = newJoueur();
+        ludophile.personnage = "👨";
+
+        ludophile.idxL = 0;
+        ludophile.idxC = 1;
+        String[][] map = new String[][]{{CHEMIN,ludophile.personnage,CHEMIN},
+                                        {CHEMIN,CHEMIN,CHEMIN},
+                                        {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementImpossibleNord(ludophile, map));
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,MONTAGNE,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementImpossibleNord(ludophile, map));
+        
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementImpossibleNord(ludophile, map));
+    }
+
     //Vérification du déplacement vers le Sud
     boolean deplacementImpossibleSud(Joueur ludophile, String[][] map){
         return ludophile.idxL == (length(map, 1)-1) || equals(map[ludophile.idxL+1][ludophile.idxC], MONTAGNE);
+    }
+    
+    void testDeplacementImpossibleSud(){
+        Joueur ludophile = newJoueur();
+        ludophile.personnage = "👨";
+
+        ludophile.idxL = 2;
+        ludophile.idxC = 1;
+        String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                                        {CHEMIN,CHEMIN,CHEMIN},
+                                        {CHEMIN,ludophile.personnage,CHEMIN}};
+        assertTrue(deplacementImpossibleSud(ludophile, map));
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,MONTAGNE,CHEMIN}};
+        assertTrue(deplacementImpossibleSud(ludophile, map));
+        
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementImpossibleSud(ludophile, map));
     }
 
     //Vérification du déplacement vers l'Ouest
     boolean deplacementImpossibleOuest(Joueur ludophile, String[][] map){
         return ludophile.idxC == 0 || equals(map[ludophile.idxL][ludophile.idxC-1], MONTAGNE);
     }
+    
+    void testDeplacementImpossibleOuest(){
+        Joueur ludophile = newJoueur();
+        ludophile.personnage = "👨";
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 0;
+        String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                                        {ludophile.personnage,CHEMIN,CHEMIN},
+                                        {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementImpossibleOuest(ludophile, map));
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {MONTAGNE,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementImpossibleOuest(ludophile, map));
+        
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementImpossibleOuest(ludophile, map));
+    }
 
     //Vérification du déplacement vers l'Est
     boolean deplacementImpossibleEst(Joueur ludophile, String[][] map){
         return ludophile.idxC == (length(map, 2)-1) || equals(map[ludophile.idxL][ludophile.idxC+1], MONTAGNE);
+    }
+    
+    void testDeplacementImpossibleEst(){
+        Joueur ludophile = newJoueur();
+        ludophile.personnage = "👨";
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 2;
+        String[][] map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                                        {CHEMIN,CHEMIN,ludophile.personnage},
+                                        {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementImpossibleEst(ludophile, map));
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,MONTAGNE},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(deplacementImpossibleEst(ludophile, map));
+        
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN,CHEMIN,CHEMIN},
+                             {CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(deplacementImpossibleEst(ludophile, map));
     }
 
     //Avancer vers le Nord
@@ -582,6 +743,22 @@ class VivreOuSurvivre extends Program{
 
         return "Nameless";
     }
+    
+    void testVerificationNom(){
+        String nom;
+
+        nom = "";
+        assertEquals("Nameless", verificationNom(nom));
+
+        nom = "      ";
+        assertEquals("Nameless", verificationNom(nom));
+
+        nom = "Tagada";
+        assertEquals("Tagada", verificationNom(nom));
+
+        nom = "      Toto";
+        assertEquals("Toto", verificationNom(nom));
+    }
 
     //Confirmation de jouer en tant que Nameless
     void estNameless(Joueur ludophile){
@@ -670,6 +847,25 @@ class VivreOuSurvivre extends Program{
         ludophile.position = "[" + (ludophile.idxL+1) + ";" + (ludophile.idxC+1) + "]";
         return ludophile.position;
     }
+    
+    void testPositionJoueur(){
+        Joueur ludophile = newJoueur();
+        ludophile.personnage = "👨";
+
+        ludophile.idxL = 1;
+        ludophile.idxC = 1;
+        String[][] map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                                        {CHEMIN, ludophile.personnage, CHEMIN},
+                                        {CHEMIN, CHEMIN, CHEMIN}};
+        assertEquals("[2;2]",positionJoueur(ludophile, map));
+
+        ludophile.idxL = 0;
+        ludophile.idxC = 0;
+        map = new String[][]{{ludophile.personnage, CHEMIN, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertEquals("[1;1]",positionJoueur(ludophile, map));
+    }
 
     //Met en String l'état du bonus : immunité au malus
     String immuniteToString(Joueur ludophile){
@@ -677,6 +873,16 @@ class VivreOuSurvivre extends Program{
             return "Activé";
         }
         return "Désactivé";
+    }
+    
+    void testImmuniteToString(){
+        Joueur ludophile = newJoueur();
+
+        ludophile.immunite = true;
+        assertEquals("Activé", immuniteToString(ludophile));
+
+        ludophile.immunite = false;
+        assertEquals("Désactivé", immuniteToString(ludophile));
     }
 
     //PV du joueur sous forme de coeur
@@ -693,6 +899,16 @@ class VivreOuSurvivre extends Program{
 
         return coeur;
     }
+    
+    void testNbCoeur(){
+        int nbLife;
+
+        nbLife = 3;
+        assertEquals("❤️❤️❤️", nbCoeur(nbLife));
+
+        nbLife = 0;
+        assertEquals("💔", nbCoeur(nbLife));
+    }
 
     //Bouclier du joueur sous forme de bouclier
     String nbBouclier(Joueur ludophile){
@@ -707,6 +923,16 @@ class VivreOuSurvivre extends Program{
         }
 
         return bouclier;
+    }
+    
+    void testNbBouclier(){
+        Joueur ludophile = newJoueur();
+
+        ludophile.nbBouclier = 3;
+        assertEquals("🛡️🛡️🛡️", nbBouclier(ludophile));
+
+        ludophile.nbBouclier = 0;
+        assertEquals("0", nbBouclier(ludophile));
     }
 
     //Affichage des informations (Nom, PV, Coordonnées, Reussite...)
@@ -723,6 +949,27 @@ class VivreOuSurvivre extends Program{
     //Retournera vrai si le Joueur a atteint l'objectif
     boolean objectifPasAtteint(Joueur ludophile, String[][] map, Objectif but){
         return equals(map[but.idxL][but.idxC], but.DRAPEAU);
+    }
+    
+    void testObjectifPasAtteint(){
+        Joueur ludophile = newJoueur();
+        Objectif but = newObjectif();
+        String[][] map;
+
+        ludophile.personnage = "👨";
+
+        but.idxL = 0;
+        but.idxC = 1;
+
+        map = new String[][]{{CHEMIN,but.DRAPEAU,CHEMIN},
+                             {ludophile.personnage, CHEMIN, CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertTrue(objectifPasAtteint(ludophile, map, but));
+
+        map = new String[][]{{CHEMIN,ludophile.personnage,CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN,CHEMIN,CHEMIN}};
+        assertFalse(objectifPasAtteint(ludophile, map, but));
     }
 
     //Effet de la Bombe
@@ -1544,20 +1791,112 @@ class VivreOuSurvivre extends Program{
     boolean estCheminNord(Joueur ludophile, String[][] map){
         return ludophile.idxL != 0 && equals(map[ludophile.idxL-1][ludophile.idxC], CHEMIN);
     }
+    
+    void testEstCheminNord(){
+        Joueur ludophile = newJoueur();
+        String[][] map;
+        ludophile.idxC = 1;
+
+        ludophile.idxL = 1;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertTrue(estCheminNord(ludophile, map));
+
+        map = new String[][]{{CHEMIN, BOMBE, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertFalse(estCheminNord(ludophile, map));
+
+        ludophile.idxL = 0;
+        map = new String[][]{{CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertFalse(estCheminNord(ludophile, map));
+    }
 
     //Condition : Vers le sud, c'est un CHEMIN?
     boolean estCheminSud(Joueur ludophile, String[][] map){
         return ludophile.idxL != length(map, 1)-1 && equals(map[ludophile.idxL+1][ludophile.idxC], CHEMIN);
+    }
+    
+    void testEstCheminSud(){
+        Joueur ludophile = newJoueur();
+        String[][] map;
+        ludophile.idxC = 1;
+
+        ludophile.idxL = 1;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertTrue(estCheminSud(ludophile, map));
+
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, ARBRE, CHEMIN}};
+        assertFalse(estCheminSud(ludophile, map));
+
+        ludophile.idxL = 2;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN}};
+        assertFalse(estCheminSud(ludophile, map));
     }
 
     //Condition : Vers l'est, c'est un CHEMIN?
     boolean estCheminEst(Joueur ludophile, String[][] map){
         return ludophile.idxC != length(map, 2)-1 && equals(map[ludophile.idxL][ludophile.idxC+1], CHEMIN);
     }
+    
+    void testEstCheminEst(){
+        Joueur ludophile = newJoueur();
+        String[][] map;
+        ludophile.idxL = 1;
+
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertTrue(estCheminEst(ludophile, map));
+
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, LAVE},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertFalse(estCheminEst(ludophile, map));
+
+        ludophile.idxC = 2;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, CHEMIN, ludophile.personnage},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertFalse(estCheminEst(ludophile, map));
+    }
 
     //Condition : Vers l'ouest, c'est un CHEMIN?
     boolean estCheminOuest(Joueur ludophile, String[][] map){
         return ludophile.idxC != 0 && equals(map[ludophile.idxL][ludophile.idxC-1], CHEMIN);
+    }
+    
+    void testEstCheminOuest(){
+        Joueur ludophile = newJoueur();
+        String[][] map;
+        ludophile.idxL = 1;
+        
+        ludophile.idxC = 1;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {CHEMIN, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertTrue(estCheminOuest(ludophile, map));
+
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {MONTAGNE, ludophile.personnage, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertFalse(estCheminOuest(ludophile, map));
+
+        ludophile.idxC = 0;
+        map = new String[][]{{CHEMIN, CHEMIN, CHEMIN},
+                             {ludophile.personnage, CHEMIN, CHEMIN},
+                             {CHEMIN, CHEMIN, CHEMIN}};
+        assertFalse(estCheminOuest(ludophile, map));
     }
 
 

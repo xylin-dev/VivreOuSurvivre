@@ -1461,6 +1461,7 @@ class VivreOuSurvivre extends Program{
                 kaomijiOrateurln(JAUNE + "Enregistrement de tes données en cours..." + RESET);
                 saveData(ludophile, csvData);
                 kaomijiOrateurln(VERT + "Enregistrement terminé !" + RESET);
+                ludophile.id = idLudophile(csvData);
             }
         } else {
             genreJoueur(ludophile);
@@ -2144,6 +2145,18 @@ class VivreOuSurvivre extends Program{
         return mdp;
     }
 
+    //Retournera la taille du tableau qui correspondra à l'ID du joueur
+    int idLudophile(String fileCSV){
+        String[][] data = data(fileCSV);
+        int lengthData = 0;
+
+        for(int idx=0; idx<length(data, 1)-2; idx++){
+            lengthData++;
+        }
+
+        return lengthData;
+    }
+
     //Restauration des données
     void restoreData(Joueur ludophile, String fileCSV, int idx){
         String[][] data = data(fileCSV);
@@ -2209,6 +2222,7 @@ class VivreOuSurvivre extends Program{
             kaomijiOrateurln(JAUNE + "Enregistrement de tes données en cours..." + RESET);
             saveData(ludophile, fileCSV);
             kaomijiOrateurln(VERT + "Enregistrement terminé !" + RESET);
+            ludophile.id = idLudophile(csvData);
         }
     }
 
@@ -2222,14 +2236,14 @@ class VivreOuSurvivre extends Program{
                 adjustData[idxL][idxC] = data[idxL][idxC];
             }
         }
-
-        adjustData[ludophile.id+1][1] = ludophile.nom;
-        adjustData[ludophile.id+1][2] = ludophile.genre;
-        adjustData[ludophile.id+1][3] = "" + ludophile.tutoriel;
-        adjustData[ludophile.id+1][4] = "" + nbVie;
-        adjustData[ludophile.id+1][5] = "" + ludophile.nbReussite;
-        adjustData[ludophile.id+1][6] = "" + ludophile.nbBouclier;
-        adjustData[ludophile.id+1][7] = "" + ludophile.immunite;
+        
+        adjustData[ludophile.id][1] = ludophile.nom;
+        adjustData[ludophile.id][2] = ludophile.genre;
+        adjustData[ludophile.id][3] = "" + ludophile.tutoriel;
+        adjustData[ludophile.id][4] = "" + nbVie;
+        adjustData[ludophile.id][5] = "" + ludophile.nbReussite;
+        adjustData[ludophile.id][6] = "" + ludophile.nbBouclier;
+        adjustData[ludophile.id][7] = "" + ludophile.immunite;
 
         saveCSV(adjustData, fileCSV);
     }

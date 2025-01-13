@@ -4,7 +4,7 @@ import extensions.CSVFile;
 class VivreOuSurvivre extends Program{
     
     /* ============================== */
-    /* VARIABLE ET CONSTANTE GLOBALES  */
+    /* VARIABLE ET CONSTANTE GLOBALES */
     /* ============================== */
 
     //Elément de la map

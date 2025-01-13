@@ -3,3 +3,4 @@ ID,Nom,Genre,Tutoriel,PV,Reussite,Bouclier,Immunite,MDP
 1,Xylin,M,false,10,3,4,true,mangue
 2,Shin'nyu,F,false,10,0,0,false,tableau
 3,Omega,M,true,10,0,0,false,patate
+4,Moi,M,false,10,0,0,false,TACOS

@@ -609,7 +609,7 @@ class VivreOuSurvivre extends Program{
 
         delay(1000);
 
-        if(ludophile.nbReussite < 2){
+        if(ludophile.tutoriel == true){
             kaomijiOrateurln(BLEU + "N'oubliez pas, vous pouvez mettre jusqu'à 20 instructions dans votre algorithme." + RESET);
             kaomijiOrateurln(JAUNE + "Si vous n'atteignez pas le drapeau à la fin de votre algorithme, vous reviendrez aux coordonnées de départ." + RESET);
             kaomijiOrateurln(GRAS + "Voici un rappel des nombres associés à un déplacement : ");
@@ -1484,15 +1484,15 @@ class VivreOuSurvivre extends Program{
         String choix;
         String[][] map = new String[5][5];
 
-        /*delayln(1000);
+        delayln(1000);
         kaomijiOrateurln("Ce que tu dois savoir ET retenir, " + BLEU + "c'est que les ordinateurs font exactement TOUT ce qu'on leur dit" + RESET + ", sans poser de questions.");
         kaomijiOrateurln("Pour ce tutoriel, je te conseille" + BLEU + " d'utiliser le pavé numérique " + RESET + "pour entrer les valeurs des déplacements qui lui correspondent.");
         kaomijiOrateurln(JAUNE + "PS: Tu ne gagnes pas de points de réussite. ;^;\n" + RESET);
         kaomijiOrateur("Appuie sur [ENTER] pour commencer le tutoriel !");
-        choix = readString();*/
+        choix = readString();
         delayln(1000);
         avancerTutoriel(ludophile, but, map);
-        /*delayln(1000);
+        delayln(1000);
         droiteTutoriel(ludophile, but, map);
         delayln(1000);
         gaucheTutoriel(ludophile, but, map);
@@ -1517,7 +1517,7 @@ class VivreOuSurvivre extends Program{
         kaomijiOrateurln(GRAS + BLEU + "Pour rappel, un algorithme est une suite d'instructions à suivre dans un ordre précis pour atteindre ton objectif." + RESET);
         kaomijiOrateurln("Grâce à ces outils, tu peux maintenant créer des algorithmes pour résoudre différents problèmes ou accomplir des tâches de manière logique et organisée.\n");
         kaomijiOrateur(GRAS + "Si tu es prêt à commencer réellement le jeu, appuie sur la touche [ENTER] de ton clavier !" + RESET);
-        choix = readString();*/
+        choix = readString();
         
         ludophile.tutoriel = false;
         println();

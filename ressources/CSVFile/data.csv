@@ -1,7 +1,5 @@
 ID,Nom,Genre,Tutoriel,PV,Reussite,Bouclier,Immunite,MDP
+0,-,-,-,-,-,-,-,-
 1,Xylin,M,false,10,3,4,true,mangue
-2,Shin'nyu,M,true,10,0,0,false,patate
-3,Mario,M,true,10,0,0,false,cube
-4,Tania,F,true,10,0,0,false,tomber
-5,Baltazar,F,false,10,0,0,false,gummies
-6,toto,M,false,10,0,0,false,toto
+2,Shin'nyu,F,false,10,0,0,false,tableau
+3,Omega,M,true,10,0,0,false,patate

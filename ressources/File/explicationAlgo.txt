@@ -1,0 +1,18 @@
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+🌟 RAPPEL 🌟
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+N'oublie pas : tu peux mettre jusqu'à 20 instructions dans ton algorithme.  
+Si tu n'atteins pas le drapeau 🚩, tu retourneras au point de départ. 😅
+
+📜 Codes pour te déplacer :
+   • [8] : ⬆️   Monte vers le haut  
+   • [2] : ⬇️   Descends vers le bas  
+   • [4] : ⬅️   Va à gauche  
+   • [6] : ➡️   Va à droite  
+   • [1] : 🔁  Boucle "POUR"  
+   • [3] : 🔄️  Boucle "TANT QUE"  
+   • [0] : ✅  Confirme ton algorithme (0 à 20 instructions)
+
+✨ Bonne chance et réfléchis bien à ton plan ! ✨
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

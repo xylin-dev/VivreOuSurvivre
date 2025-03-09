@@ -1,7 +1,6 @@
 import extensions.File;
 import extensions.CSVFile;
 
-//Note : scenario + son
 class VivreOuSurvivre extends Program {
     /* ============================== */
     /* VARIABLE ET CONSTANTE GLOBALES */
